@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 import os
 import csv
 from collections import defaultdict
@@ -34,36 +34,28 @@ def load_taxonomy_hierarchy_file(taxonomy_hierarchy_file):
     logging.info(f"Loaded {len(hierarchy)} taxonomy hierarchies")
     return hierarchy
 
-def parse_mashmap_file(mashmap_file):
+def parse_paf_file(paf_file):
     query_map = defaultdict(list)
     ref_counts = defaultdict(int)
-
-    with open(mashmap_file, "r") as f:
+    
+    with open(paf_file, "r") as f:
         for line in f:
             parts = line.strip().split("\t")
-            if len(parts) < 14:  # Ensure enough columns exist
+            if len(parts) < 11:
                 continue
-
-            query_id = parts[0]       # Query sequence name
-            query_len = int(parts[1])  # Query sequence length
-            ref_id = parts[5]         # Reference sequence name
-
-            start_query = int(parts[2])  # Query start position
-            end_query = int(parts[3])    # Query end position
-
-            align_len = end_query - start_query  # Calculate alignment length
-
-            identity_str = parts[12]  # e.g., "id:f:1"
-            identity = float(identity_str.split(":")[2]) if "id:f:" in identity_str else 0.0
-
-
+                
+            query_id = parts[0]
+            query_len = int(parts[1])
+            ref_id = parts[5]
+            align_len = int(parts[10])
+            
             coverage = align_len / query_len if query_len > 0 else 0
-            is_exact = (identity >= 0.99) and (coverage >= 0.9)  # Adjust criteria as needed
-
+            is_exact = (query_id == ref_id) and (coverage >= 0.99)
+            
             query_map[query_id].append((ref_id, coverage, is_exact))
             ref_counts[ref_id] += 1
 
-    logging.info(f"Processed {len(query_map)} queries from Mashmap file")
+    logging.info(f"Processed {len(query_map)} queries from PAF file")
     return query_map, ref_counts
 
 def determine_taxonomic_level(lineage):
@@ -164,10 +156,10 @@ def process_query(args):
     
     return (query, lineage, level, confidence)
 
-def main_process(mashmap_file, taxonomy_file, hierarchy_file, output_file, processes=4):
+def main_process(paf_file, taxonomy_file, hierarchy_file, output_file, processes=4):
     taxonomy = load_taxonomy_file(taxonomy_file)
     taxonomy_hierarchy = load_taxonomy_hierarchy_file(hierarchy_file)
-    query_map, ref_abundance = parse_mashmap_file(mashmap_file)
+    query_map, ref_abundance = parse_paf_file(paf_file)
 
     tasks = [(query, refs, ref_abundance, taxonomy, taxonomy_hierarchy) 
              for query, refs in query_map.items()]
@@ -190,8 +182,8 @@ def main_process(mashmap_file, taxonomy_file, hierarchy_file, output_file, proce
     logging.info(f"Classified: {classified}/{len(results)} ({classified/len(results):.1%})")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Advanced LCA/Best Match Taxonomic Classifier for Mashmap Output")
-    parser.add_argument("--mashmap", required=True, help="Input Mashmap file")
+    parser = argparse.ArgumentParser(description="Advanced LCA/Best Match Taxonomic Classifier")
+    parser.add_argument("--paf", required=True, help="Input PAF file")
     parser.add_argument("--taxonomy", required=True, help="Taxonomy mapping file")
     parser.add_argument("--hierarchy", required=True, help="Taxonomy hierarchy file")
     parser.add_argument("--output", required=True, help="Output TSV file")
@@ -200,9 +192,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     main_process(
-        args.mashmap,
+        args.paf,
         args.taxonomy,
         args.hierarchy,
         args.output,
         args.processes
     )
+
+
