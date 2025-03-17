@@ -100,7 +100,29 @@ The databases required to run the tool are available for download on Google Driv
 - **sketch2.msh.gz**: [Download](https://drive.google.com/drive/folders/1YC0N77UUGinFHNbLpbsucu1iXoLAM6lm?usp=share_link)
 - **sketch3.msh.gz**: [Download](https://drive.google.com/drive/folders/1YC0N77UUGinFHNbLpbsucu1iXoLAM6lm?usp=share_link)
 
-Download the files and place them in the `data/` directory of the project.
+### Steps to Use the Databases
+
+1. **Download the Files**:
+   - Click on the links above to download the `.gz` files.
+
+2. **Place the Files in the `data/` Directory**:
+   - Move the downloaded files to the `data/` directory of the project.
+
+3. **Unzip the Files**:
+   - Use the following command to unzip the `.gz` files:
+     ```bash
+     gunzip data/sketch1.msh.gz
+     gunzip data/sketch2.msh.gz
+     gunzip data/sketch3.msh.gz
+     ```
+   - This will extract the files `sketch1.msh`, `sketch2.msh`, and `sketch3.msh` in the `data/` directory.
+
+4. **Verify the Files**:
+   - After unzipping, ensure the files are in the correct format and location:
+     ```bash
+     ls data/
+     ```
+   - You should see the files `sketch1.msh`, `sketch2.msh`, and `sketch3.msh`.
 
 
 ##  Project Structure
@@ -114,6 +136,10 @@ Download the files and place them in the `data/` directory of the project.
   - **classification.py**: Script for taxonomic classification.
 - **taxonomy_files/**: Directory containing downloaded taxonomy files.
 - **data/**: Directory for storing intermediate data.
+  - sketch1.msh
+  - sketch2.msh
+  - sketch3.msh
+  - taxonomy_hierarchy.tsv
 - **output/**: Directory where final results are saved.
 
 ## Example Output
