@@ -17,7 +17,7 @@ sort -gr "$FILTERED_SCREEN" > "$SORTED_SCREEN"
 
 # Passo 2: Ajusta o threshold e seleciona os genomas
 num_sequences=$(find "$INPUT_DIR" -maxdepth 1 -name "*.fna" | wc -l)
-min_candidates=$(echo "$num_sequences * 4.25" | bc | awk '{printf("%d\n",$1 + 0.5)}')
+min_candidates=$(echo "$num_sequences * 3.25" | bc | awk '{printf("%d\n",$1 + 0.5)}')
 min_candidates=$(( min_candidates < 5 ? 5 : min_candidates ))
 
 best_threshold=$INITIAL_THRESHOLD
@@ -41,7 +41,7 @@ while (( $(echo "$current_threshold >= 0.70" | bc -l) )); do
         break
     fi
     
-    current_threshold=$(echo "$current_threshold - 0.05" | bc -l)
+    current_threshold=$(echo "$current_threshold - 0.02" | bc -l)
 done
 
 if [ "$threshold_found" -eq 0 ]; then
