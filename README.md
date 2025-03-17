@@ -50,8 +50,6 @@ If you prefer using Conda, follow these steps:
    conda activate hymet_env
    ```
 
-3. **Run the Tool**:
-   - You can now run the tool directly in the terminal.
 
 
 ## Input Requirements
