@@ -1,10 +1,6 @@
 # HYMET (Hybrid Metagenomic Tool)
 
 
-Here’s the text in English for your GitHub **README.md**:
-
----
-
 ## Installation and Configuration
 
 Follow the steps below to install and configure **HYMET**
@@ -18,7 +14,7 @@ git clone [[https://github.com/your-username/your-repository.git](https://github
 cd HYMET
 ```
 
----
+
 
 ### 2. Installation with Docker (Recommended)
 
@@ -38,7 +34,7 @@ If you prefer using Docker, follow these steps:
    - The environment will already be set up with all dependencies installed.
    - Run the tool as needed.
 
----
+
 
 ### 3. Installation with Conda
 
@@ -57,7 +53,7 @@ If you prefer using Conda, follow these steps:
 3. **Run the Tool**:
    - You can now run the tool directly in the terminal.
 
----
+
 ## Input Requirements
 
 ### Input File Format
@@ -108,7 +104,7 @@ The databases required to run the tool are available for download on Google Driv
 
 Download the files and place them in the `data/` directory of the project.
 
----
+
 ##  Project Structure
 
 - **config.pl**: Configuration script that downloads and prepares taxonomy files.
@@ -131,8 +127,6 @@ The tool generates a `classified_sequences.tsv` file in the `output/` directory 
 - **Taxonomic Level**: Taxonomic level (e.g., species, genus).
 - **Confidence**: Classification confidence (0 to 1).
 
-
----
 
 ## 8. Support
 
