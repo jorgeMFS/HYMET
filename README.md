@@ -14,8 +14,6 @@ git clone [[https://github.com/your-username/your-repository.git](https://github
 cd HYMET
 ```
 
-
-
 ### 2. Installation with Docker (Recommended)
 
 If you prefer using Docker, follow these steps:
@@ -78,6 +76,13 @@ Each file (`sample1.fna`, `sample2.fna`, etc.) should follow the FASTA format de
 
 
 ## Execution
+Ensure all scripts have execution permissions:
+   ```bash
+   chmod +x config.pl
+   chmod +x main.pl
+   chmod +x scripts/*.sh
+   chmod +x scripts/*.py
+   ```
 
 After installation and configuration, first you should run the configuration script to download and prepare the taxonomy files, and define the main paths.
 
@@ -90,8 +95,6 @@ Then, you can run the main tool to perform taxonomic identification:
 ```bash
 ./main.pl
 ```
-
----
 
 ## Reference Sketched Databases
 
@@ -151,7 +154,20 @@ The tool generates a `classified_sequences.tsv` file in the `output/` directory 
 - **Taxonomic Level**: Taxonomic level (e.g., species, genus).
 - **Confidence**: Classification confidence (0 to 1).
 
+## Test Dataset
+- This folder includes scripts to install and prepare all necessary data to replicate the work using our dataset.
+  - **Prerequisites**:
+    - Before running the scripts in this folder, users need to download the assembly files (`assembly_files.txt`) for each domain from the NCBI FTP site.
+  - **Scripts**:
+    - **`create_database.py`**: Downloads 10% of the content from each downloaded assembly file and organizes the datasets by domain.
+    - **`extractNC.py`**: Maps the content of each Genome Collection File (GCF) with its respective sequence identifiers. It generates a CSV file containing       this mapping, with one column for the GCF and another column for the sequence identifiers (such as NC, NZ, etc.) present in each GCF.
+    - **`extractTaxonomy.py`**: Creates a CSV file containing the GCF and its respective taxonomy, among other information.
+    - Additional scripts modify the data format and organization, including:
+      - Implementing mutations
+      - Converting formats (e.g., FASTA to FASTQ)
+      - Formatting into paired-end reads
+    - **`GCFtocombinedfasta.py`**: Combines all GCFs from each domain into a single FASTA file, separating sequences by identifier. This script is used as input for most of the tools.
 
-## 8. Support
+## Support
 
-For questions or issues, please open an [issue]([https://github.com/your-username/your-repository/issues](https://github.com/inesbmartins02/HYMET.git)) in the repository.
+For questions or issues, please open an [issue]([(https://github.com/inesbmartins02/HYMET.git]) in the repository.
