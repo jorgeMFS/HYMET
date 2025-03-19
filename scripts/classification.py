@@ -198,5 +198,3 @@ if __name__ == "__main__":
         args.output,
         args.processes
     )
-
-
