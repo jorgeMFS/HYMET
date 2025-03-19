@@ -2,12 +2,14 @@
 use strict;
 use warnings;
 
-# Define the necessary paths and URLs
-my $base_path = '/mnt/storagelv/home/inesbrancomartins/Tese/tool1_fast';
+# Assume the current directory is the root of the tool (HYMET)
+my $base_path = '.';  # Current directory (HYMET)
+
+# Define the necessary directories
 my $taxonomy_files_dir = "$base_path/taxonomy_files";
 my $scripts_dir = "$base_path/scripts";
 
-# Create directories if they do not exist
+# Create directories if they don't exist
 mkdir $taxonomy_files_dir unless -d $taxonomy_files_dir;
 mkdir $scripts_dir unless -d $scripts_dir;
 
