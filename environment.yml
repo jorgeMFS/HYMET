@@ -12,6 +12,13 @@ dependencies:
   - pandas
   - numpy
   - pip
+  - biopython
+  - csvkit
+  - gzip
+  - shutil
+  - logging
+  - multiprocessing
+  - argparse
   - pip:
-    - biopython 
-
+    - biopython
+    - tqdm  # For progress bars (optional but useful)
