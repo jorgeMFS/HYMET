@@ -1,35 +1,9 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use Time::HiRes qw(time);
 
-if (grep { $_ eq '--version' } @ARGV) {
-    print "HYMET v1.0.0\n";
-    exit 0;
-}
-
-if (grep { $_ eq '--help' } @ARGV) {
-    print <<'HELP';
-HYMET - Hybrid Metagenomic Tool
-Usage:
-  hymet [--dry-run] [--version] [--help]
-  hymet <input_directory>
-
-Options:
-  --dry-run   Validate installation without processing
-  --version   Show version information
-  --help      Show this help message
-HELP
-    exit 0;
-}
-
-if (grep { $_ eq '--dry-run' } @ARGV) {
-    print "DRY-RUN: All components are functional.\n";
-    print "Required data paths:\n";
-    print "  - Input directory with .fna files\n";
-    print "  - Database files in: lib/hymet/data/\n";
-    exit 0;
-}
-
+# User-modifiable parameters
 my $mash_threshold_refseq = 0.90;  # Initial threshold for RefSeq
 my $mash_threshold_gtdb = 0.90;    # Initial threshold for GTDB
 my $mash_threshold_custom = 0.90;  # Initial threshold for the custom database
