@@ -1,20 +1,35 @@
 # HYMET (Hybrid Metagenomic Tool)
 
+[![Conda Version](https://anaconda.org/bioconda/hymet/badges/version.svg)](https://anaconda.org/bioconda/hymet)
+[![Downloads](https://anaconda.org/bioconda/hymet/badges/downloads.svg)](https://anaconda.org/bioconda/hymet)
+[![Platforms](https://anaconda.org/bioconda/hymet/badges/platforms.svg)](https://anaconda.org/bioconda/hymet)
+[![License](https://anaconda.org/bioconda/hymet/badges/license.svg)](https://anaconda.org/bioconda/hymet)
+[![Latest Release Date](https://anaconda.org/bioconda/hymet/badges/latest_release_date.svg)](https://anaconda.org/bioconda/hymet)
 
 ## Installation and Configuration
 
 Follow the steps below to install and configure **HYMET**
 
-### 1. Clone the Repository
+### 1. Installation with Conda (Recommended)
 
-First, clone the repository to your local environment:
+The easiest way to install HYMET is through Bioconda:
 
 ```bash
-git clone [[https://github.com/your-username/your-repository.git](https://github.com/inesbmartins02/HYMET.git)]
+conda install -c bioconda hymet
+```
+
+After installation, you will need to download the reference databases as described in the [Reference Sketched Databases](#reference-sketched-databases) section.
+
+### 2. Clone the Repository
+
+Alternatively, you can clone the repository to your local environment:
+
+```bash
+git clone https://github.com/inesbmartins02/HYMET.git
 cd HYMET
 ```
 
-### 2. Installation with Docker (Recommended)
+### 3. Installation with Docker
 
 If you prefer using Docker, follow these steps:
 
@@ -32,11 +47,9 @@ If you prefer using Docker, follow these steps:
    - The environment will already be set up with all dependencies installed.
    - Run the tool as needed.
 
+### 4. Installation with Conda Environment File
 
-
-### 3. Installation with Conda
-
-If you prefer using Conda, follow these steps:
+If you cloned the repository, you can create a Conda environment from the included file:
 
 1. **Create the Conda Environment**:
    ```bash
@@ -47,8 +60,6 @@ If you prefer using Conda, follow these steps:
    ```bash
    conda activate hymet_env
    ```
-
-
 
 ## Input Requirements
 
@@ -94,6 +105,12 @@ Then, you can run the main tool to perform taxonomic identification:
 
 ```bash
 ./main.pl
+```
+
+If installed via Conda, you can use:
+```bash
+hymet-config
+hymet
 ```
 
 ## Reference Sketched Databases
@@ -170,4 +187,4 @@ The tool generates a `classified_sequences.tsv` file in the `output/` directory 
 
 ## Support
 
-For questions or issues, please open an [issue]([(https://github.com/inesbmartins02/HYMET.git]) in the repository.
+For questions or issues, please open an [issue](https://github.com/inesbmartins02/HYMET/issues) in the repository.
