@@ -63,17 +63,17 @@ def generate_taxonomy_hierarchy(names_file, nodes_file, output_file):
     print(f"File generated successfully: {output_file}")
 
 if __name__ == "__main__":
-    BASE_PATH = '/mnt/storagelv/home/inesbrancomartins/Tese/tool1_fast'
+    BASE_PATH = '.'
     TAXONOMY_FILES_DIR = os.path.join(BASE_PATH, 'taxonomy_files')
-    SCRIPTS_DIR = os.path.join(BASE_PATH, 'scripts')
+    DATA_DIR = os.path.join(BASE_PATH, 'data')  # Changed from 'scripts' to 'data'
     
-    # Create scripts directory if it does not exist
-    if not os.path.exists(SCRIPTS_DIR):
-        os.makedirs(SCRIPTS_DIR)
+    # Create data directory if it does not exist
+    if not os.path.exists(DATA_DIR):
+        os.makedirs(DATA_DIR)
     
     NAMES_DMP_PATH = os.path.join(TAXONOMY_FILES_DIR, 'names.dmp')
     NODES_DMP_PATH = os.path.join(TAXONOMY_FILES_DIR, 'nodes.dmp')
-    OUTPUT_HIERARCHY_FILE_PATH = os.path.join(SCRIPTS_DIR, 'taxonomy_hierarchy.tsv')
+    OUTPUT_HIERARCHY_FILE_PATH = os.path.join(DATA_DIR, 'taxonomy_hierarchy.tsv')  # Changed output location
     
     # Check if files exist
     if not os.path.exists(NAMES_DMP_PATH):
