@@ -25,7 +25,7 @@ After installation, you will need to download the reference databases as describ
 Alternatively, you can clone the repository to your local environment:
 
 ```bash
-git clone https://github.com/inesbmartins02/HYMET.git
+git clone https://github.com/ieeta-pt/HYMET.git
 cd HYMET
 ```
 
@@ -187,4 +187,4 @@ The tool generates a `classified_sequences.tsv` file in the `output/` directory 
 
 ## Support
 
-For questions or issues, please open an [issue](https://github.com/inesbmartins02/HYMET/issues) in the repository.
+For questions or issues, please open an [issue](https://github.com/ieeta-pt/HYMET/issues) in the repository.
