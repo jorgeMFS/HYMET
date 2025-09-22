@@ -2,6 +2,8 @@
 use strict;
 use warnings;
 use Time::HiRes qw(time);
+use FindBin qw($Bin);
+use File::Spec::Functions qw(catdir catfile);
 
 # User-modifiable parameters
 my $mash_threshold_refseq = 0.90;  # Initial threshold for RefSeq
@@ -10,19 +12,21 @@ my $mash_threshold_custom = 0.90;  # Initial threshold for the custom database
 
 my $classification_processes = 8;  # Default value: 4
 
-# Define the base path as the current directory (HYMET)
-my $base_path = '.';  # Current directory (HYMET)
+# Define the base path as the directory containing this script
+my $base_path = $Bin;
 
 # Define paths for the scripts
-my $mash_script = "$base_path/scripts/mash.sh";
-my $download_script = "$base_path/scripts/downloadDB.py";
-my $minimap_script = "$base_path/scripts/minimap2.sh";
-my $classification_script = "$base_path/scripts/classification.py";
-my $cleandf_script = "$base_path/scripts/cleandf.py";
+my $scripts_dir = catdir($base_path, 'scripts');
+my $mash_script = catfile($scripts_dir, 'mash.sh');
+my $download_script = catfile($scripts_dir, 'downloadDB.py');
+my $minimap_script = catfile($scripts_dir, 'minimap2.sh');
+my $classification_script = catfile($scripts_dir, 'classification.py');
+my $cleandf_script = catfile($scripts_dir, 'cleandf.py');
 
 # Define common paths
-my $output_dir = "$base_path/output";
-my $data_dir = "$base_path/data";
+my $output_dir = catdir($base_path, 'output');
+my $data_dir = catdir($base_path, 'data');
+my $cache_dir = catdir($base_path, 'cache');
 
 # Prompt the user for the input directory (where the .fna files are located)
 print "Please enter the path to the input directory (containing .fna files): ";
@@ -36,34 +40,34 @@ unless (-d $input_dir) {
 # Specific paths for each script
 my %paths = (
     mash => {
-        mash_screen => "$data_dir/sketch1.msh",
-        gtdb_mash_screen => "$data_dir/sketch2.msh",
-        custom_mash_screen => "$data_dir/sketch3.msh",  # Path for the third database
-        screen_tab => "$output_dir/screen.tab",
-        gtdb_screen_tab => "$output_dir/gtdb_screen.tab",
-        custom_screen_tab => "$output_dir/custom_screen.tab",  # Output file for the third database
-        filtered_screen => "$output_dir/filtered_screen.tab",
-        sorted_screen => "$output_dir/sorted_screen.tab",
-        top_hits => "$output_dir/top_hits.tab",
-        selected_genomes => "$output_dir/selected_genomes.txt",
+        mash_screen => catfile($data_dir, 'sketch1.msh'),
+        gtdb_mash_screen => catfile($data_dir, 'sketch2.msh'),
+        custom_mash_screen => catfile($data_dir, 'sketch3.msh'),  # Path for the third database
+        screen_tab => catfile($output_dir, 'screen.tab'),
+        gtdb_screen_tab => catfile($output_dir, 'gtdb_screen.tab'),
+        custom_screen_tab => catfile($output_dir, 'custom_screen.tab'),  # Output file for the third database
+        filtered_screen => catfile($output_dir, 'filtered_screen.tab'),
+        sorted_screen => catfile($output_dir, 'sorted_screen.tab'),
+        top_hits => catfile($output_dir, 'top_hits.tab'),
+        selected_genomes => catfile($output_dir, 'selected_genomes.txt'),
     },
     download => {
-        genomes_file => "$output_dir/selected_genomes.txt",
-        downloaded_genomes => "$data_dir/downloaded_genomes",
-        taxonomy_file => "$data_dir/detailed_taxonomy.tsv",
-        cache_dir => "$base_path/cache",
-        log_file => "$data_dir/downloaded_genomes/genome_download_log.txt",
+        genomes_file => catfile($output_dir, 'selected_genomes.txt'),
+        downloaded_genomes => catdir($data_dir, 'downloaded_genomes'),
+        taxonomy_file => catfile($data_dir, 'detailed_taxonomy.tsv'),
+        cache_dir => $cache_dir,
+        log_file => catfile($data_dir, 'downloaded_genomes', 'genome_download_log.txt'),
     },
     minimap => {
-        reference_set => "$data_dir/downloaded_genomes/combined_genomes.fasta",
-        nt_mmi => "$output_dir/reference.mmi",
-        resultados_paf => "$output_dir/resultados.paf",
+        reference_set => catfile($data_dir, 'downloaded_genomes', 'combined_genomes.fasta'),
+        nt_mmi => catfile($output_dir, 'reference.mmi'),
+        resultados_paf => catfile($output_dir, 'resultados.paf'),
     },
     classification => {
-        paf_file => "$output_dir/resultados.paf",
-        taxonomy_file => "$data_dir/detailed_taxonomy.tsv",
-        hierarchy_file => "$data_dir/taxonomy_hierarchy.tsv",
-        output_file => "$output_dir/classified_sequences.tsv",
+        paf_file => catfile($output_dir, 'resultados.paf'),
+        taxonomy_file => catfile($data_dir, 'detailed_taxonomy.tsv'),
+        hierarchy_file => catfile($data_dir, 'taxonomy_hierarchy.tsv'),
+        output_file => catfile($output_dir, 'classified_sequences.tsv'),
     },
 );
 

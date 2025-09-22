@@ -1,13 +1,19 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use FindBin qw($Bin);
+use File::Spec::Functions qw(catdir catfile);
 
-# Assume the current directory is the root of the tool (HYMET)
-my $base_path = '.';  # Current directory (HYMET)
+# Use the directory containing this script as the base path
+my $base_path = $Bin;
 
 # Define the necessary directories
-my $taxonomy_files_dir = "$base_path/taxonomy_files";
-my $scripts_dir = "$base_path/scripts";
+my $taxonomy_files_dir = catdir($base_path, 'taxonomy_files');
+my $scripts_dir = catdir($base_path, 'scripts');
+my $data_dir = catdir($base_path, 'data');
+
+# Ensure the data directory exists for downstream scripts
+mkdir $data_dir unless -d $data_dir;
 
 # Create directories if they don't exist
 mkdir $taxonomy_files_dir unless -d $taxonomy_files_dir;
@@ -18,14 +24,16 @@ my $taxdmp_url = "ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdmp.zip";
 
 # Download taxonomy files
 print "Downloading taxonomy files...\n";
-system("wget -q -O $taxonomy_files_dir/taxdmp.zip $taxdmp_url");
+my $taxdmp_zip = catfile($taxonomy_files_dir, 'taxdmp.zip');
+system('wget', '-q', '-O', $taxdmp_zip, $taxdmp_url);
 
 # Unzip the downloaded file
 print "Unzipping taxonomy files...\n";
-system("unzip -q $taxonomy_files_dir/taxdmp.zip -d $taxonomy_files_dir");
+system('unzip', '-q', $taxdmp_zip, '-d', $taxonomy_files_dir);
 
 # Execute the Python script
 print "Executing Python script...\n";
-system("python3 $scripts_dir/taxonomy_hierarchy.py");
+my $taxonomy_script = catfile($scripts_dir, 'taxonomy_hierarchy.py');
+system('python3', $taxonomy_script, $taxonomy_files_dir, $data_dir);
 
 print "Configuration completed.\n";
