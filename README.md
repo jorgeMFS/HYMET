@@ -18,7 +18,7 @@ The easiest way to install HYMET is through Bioconda:
 conda install -c bioconda hymet
 ```
 
-After installation, you will need to download the reference databases as described in the [Reference Sketched Databases](#reference-sketched-databases) section.
+After installation, you will need to download the reference databases as described in the [Reference Sketched Databases](#reference-sketched-databases) section. The executable `hymet-config` and the main pipeline command `hymet` can now be executed from any directory; runtime data are stored in a writable location (see [Runtime Directories](#runtime-directories)).
 
 ### 2. Clone the Repository
 
@@ -112,6 +112,17 @@ If installed via Conda, you can use:
 hymet-config
 hymet
 ```
+
+Both commands use `~/.hymet` as the default working directory and will create it automatically if it does not exist. You can change the location by defining the `HYMET_WORKDIR` environment variable before invoking either command.
+
+## Runtime Directories
+
+HYMET separates immutable resources from user-specific data so that the Conda installation can be used without cloning the repository. The following environment variables are available:
+
+- **`HYMET_WORKDIR`** – Optional. Overrides the default working directory (`~/.hymet`). This directory will contain the downloaded taxonomy files, cached genomes, and pipeline outputs. Ensure the location is writable.
+- **`HYMET_RESOURCES`** – Optional. Overrides the directory where HYMET looks for bundled helper scripts. Normally this is detected automatically from the Conda installation or the cloned repository and should not need to be set unless the package is relocated.
+
+When running from a cloned repository, both variables are optional and the defaults continue to work.
 
 ## Reference Sketched Databases
 

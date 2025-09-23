@@ -2,8 +2,10 @@
 use strict;
 use warnings;
 use Time::HiRes qw(time);
+use Cwd qw(abs_path);
 use FindBin qw($Bin);
-use File::Spec::Functions qw(catdir catfile);
+use File::Path qw(make_path);
+use File::Spec::Functions qw(catdir catfile rel2abs);
 
 # User-modifiable parameters
 my $mash_threshold_refseq = 0.90;  # Initial threshold for RefSeq
@@ -12,25 +14,54 @@ my $mash_threshold_custom = 0.90;  # Initial threshold for the custom database
 
 my $classification_processes = 8;  # Default value: 4
 
-# Define the base path as the directory containing this script
-my $base_path = $Bin;
+sub find_resource_base {
+    my @candidates;
 
-# Define paths for the scripts
-my $scripts_dir = catdir($base_path, 'scripts');
+    push @candidates, $ENV{HYMET_RESOURCES} if $ENV{HYMET_RESOURCES};
+
+    my $bin_path = abs_path($Bin);
+    push @candidates, $bin_path if defined $bin_path;
+
+    if (defined $bin_path) {
+        my $prefix = abs_path(catdir($bin_path, '..'));
+        if (defined $prefix) {
+            push @candidates, catdir($prefix, 'share', 'hymet');
+            push @candidates, catdir($prefix, 'share', 'HYMET');
+        }
+    }
+
+    for my $candidate (@candidates) {
+        next unless defined $candidate;
+        my $scripts_path = catdir($candidate, 'scripts');
+        my $mash_script_path = catfile($scripts_path, 'mash.sh');
+        if (-f $mash_script_path) {
+            return ($candidate, $scripts_path);
+        }
+    }
+
+    die "Unable to locate HYMET resources. Set the HYMET_RESOURCES environment variable to the directory containing the scripts folder.\n";
+}
+
+my ($resource_base, $scripts_dir) = find_resource_base();
+
+my $home = $ENV{HOME} // '.';
+my $work_dir = $ENV{HYMET_WORKDIR} // catdir($home, '.hymet');
+$work_dir = rel2abs($work_dir);
+
 my $mash_script = catfile($scripts_dir, 'mash.sh');
 my $download_script = catfile($scripts_dir, 'downloadDB.py');
 my $minimap_script = catfile($scripts_dir, 'minimap2.sh');
 my $classification_script = catfile($scripts_dir, 'classification.py');
 my $cleandf_script = catfile($scripts_dir, 'cleandf.py');
 
-# Define common paths
-my $output_dir = catdir($base_path, 'output');
-my $data_dir = catdir($base_path, 'data');
-my $cache_dir = catdir($base_path, 'cache');
+my $output_dir = catdir($work_dir, 'output');
+my $data_dir = catdir($work_dir, 'data');
+my $cache_dir = catdir($work_dir, 'cache');
 
-# Ensure required directories exist
-mkdir $output_dir unless -d $output_dir;
-mkdir $cache_dir unless -d $cache_dir;
+make_path($output_dir, $cache_dir, $data_dir);
+make_path(catdir($data_dir, 'downloaded_genomes'));
+
+print "Using work directory: $work_dir\n";
 
 # Prompt the user for the input directory (where the .fna files are located)
 print "Please enter the path to the input directory (containing .fna files): ";
