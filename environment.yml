@@ -14,10 +14,5 @@ dependencies:
   - pip
   - biopython
   - csvkit
-  - gzip
-  - shutil
-  - logging
-  - multiprocessing
-  - argparse
-  - pip:
-    - biopython
+  - bc
+  - unzip
