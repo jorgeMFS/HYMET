@@ -28,6 +28,10 @@ my $output_dir = catdir($base_path, 'output');
 my $data_dir = catdir($base_path, 'data');
 my $cache_dir = catdir($base_path, 'cache');
 
+# Ensure required directories exist
+mkdir $output_dir unless -d $output_dir;
+mkdir $cache_dir unless -d $cache_dir;
+
 # Prompt the user for the input directory (where the .fna files are located)
 print "Please enter the path to the input directory (containing .fna files): ";
 chomp(my $input_dir = <STDIN>);

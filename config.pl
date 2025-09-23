@@ -11,9 +11,13 @@ my $base_path = $Bin;
 my $taxonomy_files_dir = catdir($base_path, 'taxonomy_files');
 my $scripts_dir = catdir($base_path, 'scripts');
 my $data_dir = catdir($base_path, 'data');
+my $output_dir = catdir($base_path, 'output');
+my $cache_dir = catdir($base_path, 'cache');
 
 # Ensure the data directory exists for downstream scripts
 mkdir $data_dir unless -d $data_dir;
+mkdir $output_dir unless -d $output_dir;
+mkdir $cache_dir unless -d $cache_dir;
 
 # Create directories if they don't exist
 mkdir $taxonomy_files_dir unless -d $taxonomy_files_dir;
