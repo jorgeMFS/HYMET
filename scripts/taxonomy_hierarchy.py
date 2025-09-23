@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import csv
 
@@ -62,25 +63,41 @@ def generate_taxonomy_hierarchy(names_file, nodes_file, output_file):
 
     print(f"File generated successfully: {output_file}")
 
-if __name__ == "__main__":
-    BASE_PATH = '.'
-    TAXONOMY_FILES_DIR = os.path.join(BASE_PATH, 'taxonomy_files')
-    DATA_DIR = os.path.join(BASE_PATH, 'data')  # Changed from 'scripts' to 'data'
-    
-    # Create data directory if it does not exist
-    if not os.path.exists(DATA_DIR):
-        os.makedirs(DATA_DIR)
-    
-    NAMES_DMP_PATH = os.path.join(TAXONOMY_FILES_DIR, 'names.dmp')
-    NODES_DMP_PATH = os.path.join(TAXONOMY_FILES_DIR, 'nodes.dmp')
-    OUTPUT_HIERARCHY_FILE_PATH = os.path.join(DATA_DIR, 'taxonomy_hierarchy.tsv')  # Changed output location
-    
-    # Check if files exist
-    if not os.path.exists(NAMES_DMP_PATH):
-        raise FileNotFoundError(f"File {NAMES_DMP_PATH} not found.")
-    
-    if not os.path.exists(NODES_DMP_PATH):
-        raise FileNotFoundError(f"File {NODES_DMP_PATH} not found.")
+def main():
+    parser = argparse.ArgumentParser(
+        description="Generate taxonomy hierarchy TSV from NCBI taxonomy dumps."
+    )
+    parser.add_argument(
+        "taxonomy_dir",
+        help="Directory containing names.dmp and nodes.dmp files",
+    )
+    parser.add_argument(
+        "output_dir",
+        help="Directory where taxonomy_hierarchy.tsv will be written",
+    )
 
-    # Generate taxonomy hierarchy
-    generate_taxonomy_hierarchy(NAMES_DMP_PATH, NODES_DMP_PATH, OUTPUT_HIERARCHY_FILE_PATH)
+    args = parser.parse_args()
+
+    taxonomy_dir = os.path.abspath(args.taxonomy_dir)
+    output_dir = os.path.abspath(args.output_dir)
+
+    if not os.path.isdir(taxonomy_dir):
+        raise NotADirectoryError(f"Taxonomy directory not found: {taxonomy_dir}")
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    names_dmp_path = os.path.join(taxonomy_dir, 'names.dmp')
+    nodes_dmp_path = os.path.join(taxonomy_dir, 'nodes.dmp')
+    output_hierarchy_file_path = os.path.join(output_dir, 'taxonomy_hierarchy.tsv')
+
+    if not os.path.exists(names_dmp_path):
+        raise FileNotFoundError(f"File {names_dmp_path} not found.")
+
+    if not os.path.exists(nodes_dmp_path):
+        raise FileNotFoundError(f"File {nodes_dmp_path} not found.")
+
+    generate_taxonomy_hierarchy(names_dmp_path, nodes_dmp_path, output_hierarchy_file_path)
+
+
+if __name__ == "__main__":
+    main()
