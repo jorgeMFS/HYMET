@@ -64,7 +64,7 @@ If you cloned the repository, you can create a Conda environment from the includ
 ## Input Requirements
 
 ### Input File Format
-The tool expects input files in **FASTA format** (`.fna` or `.fasta`). Each file should contain metagenomic sequences with headers in the following format:
+HYMET currently operates on assembled contigs provided as **FASTA files** (`.fna` or `.fasta`). Raw sequencing reads (e.g., FASTQ/FAST5 files or paired-end libraries) are not supported because the pipeline explicitly glob-matches `.fna` inputs and runs assembly-oriented workflows in [`main.pl`](main.pl), [`scripts/mash.sh`](scripts/mash.sh), and [`scripts/minimap2.sh`](scripts/minimap2.sh). Each FASTA file should contain metagenomic sequences with headers in the following format:
 ```
 >sequence_id additional_info
 SEQUENCE_DATA
@@ -74,7 +74,7 @@ SEQUENCE_DATA
 - **SEQUENCE_DATA**: The nucleotide sequence.
 
 ### Input Directory
-Place your input files in the directory specified by the `$input_dir` variable in the `main.pl` script. 
+Place your contig FASTA files in the directory specified by the `$input_dir` variable in `main.pl`. Only `.fna`/`.fasta` files located directly in this folder are processed by the helper scripts.
 
 For example, if your input directory contains the following files:
 ```
@@ -194,6 +194,7 @@ The tool generates a `classified_sequences.tsv` file in the `output/` directory 
       - Implementing mutations
       - Converting formats (e.g., FASTA to FASTQ)
       - Formatting into paired-end reads
+      - *Note: These conversions support dataset preparation workflows; the main HYMET pipeline continues to require assembled contigs in FASTA format as described above.*
     - **`GCFtocombinedfasta.py`**: Combines all GCFs from each domain into a single FASTA file, separating sequences by identifier. This script is used as input for most of the tools.
 
 ## Support

@@ -16,7 +16,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Run alignment using minimap2 (for long reads)
+# Run alignment using minimap2 on assembled contigs
 echo "Running alignment with minimap2..."
 minimap2 -x asm10 "$NT_MMI" "$INPUT_DIR"/*.fna >"$RESULTADOS_PAF"
 
