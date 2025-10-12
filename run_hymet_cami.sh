@@ -6,7 +6,7 @@
 #   INPUT_FASTA=/data/cami/sample_0.fna OUTDIR=/data/hymet_out/sample_0 THREADS=16 bash run_hymet_cami.sh
 #
 # Notes:
-# - Works with the fixed classifier in scripts/classification.py. If that fails (empty result),
+# - Works with the fixed classifier in scripts/classification_cami.py. If that fails (empty result),
 #   a robust fallback (first-hit mapping via Identifiers) kicks in automatically.
 # - Avoids copying a file onto itself and includes clear diagnostics.
 #
@@ -43,7 +43,7 @@ cd "$ROOT" || die "cannot cd to $ROOT"
 # ---- checks ----
 [ -s "$INPUT_FASTA" ] || die "missing FASTA $INPUT_FASTA"
 for f in data/sketch1.msh data/sketch2.msh data/sketch3.msh data/detailed_taxonomy.tsv data/taxonomy_hierarchy.tsv \
-         scripts/mash.sh scripts/minimap2.sh scripts/classification.py; do
+         scripts/mash.sh scripts/minimap2.sh scripts/classification_cami.py; do
   [ -s "$f" ] || die "missing $f"
 done
 [ -d taxonomy_files ] || { log "taxonomy_files missing → running ./config.pl"; ./config.pl; }
@@ -112,8 +112,8 @@ if [ ! -s output/resultados.paf ]; then
 fi
 
 # 5) classify (primary path)
-log "classification.py on raw PAF"
-python3 scripts/classification.py \
+log "classification_cami.py on raw PAF"
+python3 scripts/classification_cami.py \
   --paf output/resultados.paf \
   --taxonomy data/detailed_taxonomy.tsv \
   --hierarchy data/taxonomy_hierarchy.tsv \
