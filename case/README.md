@@ -1,0 +1,70 @@
+# HYMET Case Study & Database Ablation Toolkit
+
+This directory complements the CAMI benchmark harness with scripts to run HYMET on real-world contig datasets and to measure graceful degradation when reference sequences are progressively removed.
+
+## Layout
+
+```
+case/
+├── manifest.tsv          # Case-study samples (sample_id, contigs_fa, expected_taxa, citation)
+├── run_case.sh           # Execute HYMET (and optional MetaPhlAn sanity checks)
+├── run_ablation.sh       # Run HYMET across reference ablation levels
+├── ablate_db.py          # Produce ablated FASTA references
+├── lib/
+│   ├── common.sh         # Shared helpers (path resolution, logging)
+│   └── measure.sh        # Runtime/memory tracker (wrapper over /usr/bin/time -v)
+└── .gitignore            # Ignores heavy outputs (out/, tmp/, ablation/)
+```
+
+## Quick Start
+
+1. **Populate the manifest** (`manifest.tsv`)
+
+   Fill in a real-world contig FASTA and optional metadata:
+   ```tsv
+   sample_id	contigs_fa	expected_taxa	citation
+   gut_case	/data/case/gut_assembly.fna	"Bacteroides fragilis;Escherichia coli"	"Doe et al., Microbiome (2024)"
+   ```
+
+2. **Run the case study**
+
+   ```bash
+   cd HYMET/case
+   THREADS=16 ./run_case.sh --sanity-metaphlan
+   ```
+
+   Outputs land in `case/out/<sample>/`:
+   - `hymet/profile.cami.tsv`, `hymet/classified_sequences.tsv`
+   - `top_taxa.tsv` (Top N taxa by abundance)
+   - Optional `metaphlan/profile.tsv` and `metaphlan/comparison.tsv`
+   - `metadata.json` summarising inputs
+   - `out/runtime_memory.tsv` capturing wall time, CPU time, RSS, and I/O
+
+3. **Ablation experiment**
+
+   Remove increasing fractions of dominant taxa from the shared FASTA and re-run HYMET:
+   ```bash
+   ./run_ablation.sh \
+     --taxa 1239,976 \       # TaxIDs to ablate (e.g., Bacillota, Bacteroidota)
+     --levels 0,0.25,0.5,0.75,1.0 \
+     --threads 16
+   ```
+
+   For each level, `ablate_db.py` creates FASTA files under `case/ablation/refsets/`, HYMET runs, and `case/ablation_summary.tsv` records how assignments fall back from species → higher ranks. Runtime stats are appended to `case/out/runtime_memory.tsv` with stage labels `ablation_<level>`.
+
+## Outputs
+
+- `case/out/runtime_memory.tsv` – Absolute wall/user/sys time plus memory and I/O for HYMET (and optional MetaPhlAn) case runs.
+- `case/out/<sample>/top_taxa.tsv` – Top-N ranked taxa summary.
+- `case/ablation/refsets/*.fasta` – Ablated references (percentage encoded in the filename).
+- `case/ablation/<sample>/level_<label>/hymet/` – HYMET outputs for each ablation level.
+- `case/ablation_summary.tsv` – Per-level fallback stats (% assignments retained at species/genus/family, etc.).
+
+## Notes
+
+- The scripts reuse the CAMI harness (`bench/run_hymet.sh`) to guarantee identical classifier behaviour.
+- MetaPhlAn sanity checks are optional; set `--sanity-metaphlan` and ensure its database is installed.
+- Ablation temporarily replaces `HYMET/data/downloaded_genomes/combined_genomes.fasta`; the `run_ablation.sh` script backs up and restores the original file automatically.
+- All heavy artefacts are ignored by git (`out/`, `ablation/`, `tmp/`).
+
+Use these outputs to populate manuscript sections describing real-data performance and robustness under incomplete reference databases.

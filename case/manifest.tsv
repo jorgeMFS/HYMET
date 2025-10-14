@@ -1,0 +1,2 @@
+sample_id	contigs_fa	expected_taxa	citation
+example_case	/path/to/real_sample.fna	"Escherichia coli;Bacteroides fragilis"	"Author et al., Journal, Year, DOI"
