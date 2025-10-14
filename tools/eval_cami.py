@@ -16,15 +16,67 @@ DEF_PAF = "/data/hymet_out/sample_0/work/resultados.paf"
 DEF_OUTDIR = "/data/hymet_out/sample_0/eval"
 RANKS = ["superkingdom","phylum","class","order","family","genus","species"]
 RANKC = ["k","p","c","o","f","g","s"]
+LINEAGE_ALIAS = {
+    "domain": "superkingdom",
+    "kingdom": "superkingdom",
+    "sk": "superkingdom",
+    "k": "superkingdom",
+    "superkingdom": "superkingdom",
+    "phylum": "phylum",
+    "p": "phylum",
+    "class": "class",
+    "c": "class",
+    "order": "order",
+    "o": "order",
+    "family": "family",
+    "f": "family",
+    "genus": "genus",
+    "g": "genus",
+    "species": "species",
+    "s": "species",
+    "subspecies": "species",
+    "ss": "species",
+    "strain": "species"
+}
 
 # ----------------- utils -----------------
 def ensure_dir(p): pathlib.Path(p).mkdir(parents=True, exist_ok=True)
-def is_num(s): return bool(re.fullmatch(r"[0-9]+", (s or "").strip()))
+def is_num(s):
+    s = (s or "").strip()
+    if not s:
+        return False
+    if s.isdigit():
+        return True
+    if re.fullmatch(r"[0-9]+(?:\.[0-9]+)?", s):
+        return True
+    return False
+
+def normalize_taxid(val: str) -> str:
+    if not val:
+        return ""
+    match = re.search(r"[0-9]+", val)
+    return match.group(0) if match else ""
 def open_any(path):
     if path.endswith(".gz"): return gzip.open(path, "rt")
     return open(path, "r")
 def chunked(seq, n):
     for i in range(0, len(seq), n): yield seq[i:i+n]
+
+
+def parse_lineage_string(lineage_raw: str) -> dict:
+    names_by_rank = {}
+    if not lineage_raw:
+        return names_by_rank
+    parts = [seg.strip() for seg in lineage_raw.split(";") if seg.strip()]
+    for part in parts:
+        if ":" not in part:
+            continue
+        rk, nm = part.split(":", 1)
+        rk = LINEAGE_ALIAS.get(rk.strip().lower())
+        nm = nm.strip()
+        if rk and nm:
+            names_by_rank[rk] = nm
+    return names_by_rank
 
 def fasta_lengths(paths):
     lens = {}
@@ -96,7 +148,7 @@ def load_id_map(taxmap_path):
     with open(taxmap_path, newline='') as f:
         r=csv.DictReader(f, delimiter="\t")
         for row in r:
-            tax=(row.get('TaxID') or '').strip()
+            tax=normalize_taxid(row.get('TaxID') or '')
             if not tax: continue
             for key in ('GCF','GCA'):
                 v=(row.get(key) or '').strip()
@@ -145,8 +197,8 @@ def _parse_cami_like(lines, taxdb):
         mul = 100.0 if "abundance" in h[i_perc] or "fraction" in h[i_perc] else 1.0
         for ps in rows:
             try:
-                tid=ps[i_taxid].strip(); rk=ps[i_rank].strip().lower(); val=float(ps[i_perc])*mul
-                if rk in prof and is_num(tid): prof[rk][tid]+=val
+                tid=normalize_taxid(ps[i_taxid]); rk=ps[i_rank].strip().lower(); val=float(ps[i_perc])*mul
+                if rk in prof and tid: prof[rk][tid]+=val
             except: pass
         return prof
     if i_rank>=0 and (i_taxpath>=0 or i_taxpathsn>=0) and i_perc>=0:
@@ -192,41 +244,78 @@ def load_gt_contigs(gt_file, taxdb):
     out={}
     if not os.path.isfile(gt_file): return out
     with open(gt_file) as fh:
-        head=fh.readline()
-    sep="\t" if "\t" in head else ("," if "," in head else "\t")
-    with open_any(gt_file) as f:
-        rdr=csv.reader(f, delimiter=sep)
-        hdr=next(rdr)
-        h=[c.strip().lower() for c in hdr]
-        contig_keys = [k for k in h if any(x in k for x in ("contig","sequence","scaffold","name","id"))]
-        taxid_keys  = [k for k in h if "tax" in k and "path" not in k] + [k for k in h if k in ("ncbi_taxid","ncbi_tax_id","taxid","tax_id","species_taxid","genome_taxid")]
-        ci = h.index(contig_keys[0]) if contig_keys else 0
-        ti = h.index(taxid_keys[0])  if taxid_keys  else -1
-        rows=list(rdr)
-        if ti>=0:
+        first_line = fh.readline()
+    if "\t" in first_line:
+        sep = "\t"
+        header = [c.strip() for c in first_line.strip().split("\t")]
+        with open_any(gt_file) as f:
+            rdr = csv.reader(f, delimiter="\t")
+            hdr = next(rdr)
+            rows = [row for row in rdr]
+    elif "," in first_line:
+        sep = ","
+        header = [c.strip() for c in first_line.strip().split(",")]
+        with open_any(gt_file) as f:
+            rdr = csv.reader(f, delimiter=",")
+            hdr = next(rdr)
+            rows = [row for row in rdr]
+    else:
+        sep = None
+        header = [c.strip() for c in first_line.strip().split()]
+        rows = []
+        with open_any(gt_file) as f:
+            next(f)
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                rows.append(line.split())
+        hdr = header
+    h=[c.strip().lstrip('#').lower() for c in hdr]
+    contig_keys = [k for k in h if any(x in k for x in ("contig","sequence","scaffold"))]
+    taxid_keys  = [k for k in h if ("tax" in k and "path" not in k)] + [k for k in h if k in ("ncbi_taxid","ncbi_tax_id","taxid","tax_id","species_taxid","genome_taxid")]
+    ci = h.index(contig_keys[0]) if contig_keys else 0
+    ti = h.index(taxid_keys[0])  if taxid_keys  else -1
+    if ti>=0:
+        for ps in rows:
+            if len(ps)<=max(ci,ti): continue
+            raw=(ps[ti] or "").strip()
+            if not raw: continue
+            if not is_num(raw):
+                raw = normalize_taxid(raw)
+            if raw:
+                out[ps[ci]]=normalize_taxid(raw)
+    else:
+        try:
+            tpi = h.index("taxpath")
             for ps in rows:
-                if len(ps)<=max(ci,ti): continue
-                val=(ps[ti] or "").strip()
-                if is_num(val): out[ps[ci]]=val
-        else:
-            try:
-                tpi = h.index("taxpath")
-                for ps in rows:
-                    ids=[x for x in ps[tpi].split("|") if x and x!="NA"]
-                    if ids and is_num(ids[-1]): out[ps[ci]]=ids[-1]
-            except ValueError:
-                for ps in rows:
-                    for x in ps[1:]:
-                        if is_num(x): out[ps[0]]=x; break
+                ids=[x for x in ps[tpi].split("|") if x and x!="NA"]
+                if ids:
+                    tid = normalize_taxid(ids[-1])
+                    if tid:
+                        out[ps[ci]] = tid
+        except ValueError:
+            for ps in rows:
+                for x in ps[1:]:
+                    if is_num(x):
+                        out[ps[0]]=normalize_taxid(x)
+                        break
     return out
 
 # ---------- build profiles from contigs ----------
 def profiles_from_contig_maps(contig2tid, lengths, taxdb):
     prof = {r: collections.Counter() for r in RANKS}
     if not contig2tid: return prof
-    tids=set(contig2tid.values()); paths=taxonkit_taxpath(tids, taxdb)
+    normalized = {}
+    for cont, tid in contig2tid.items():
+        ntid = normalize_taxid(tid)
+        if ntid:
+            normalized[cont] = ntid
+    if not normalized:
+        return prof
+    tids=set(normalized.values()); paths=taxonkit_taxpath(tids, taxdb)
     acc=collections.Counter()
-    for cont,tid in contig2tid.items():
+    for cont,tid in normalized.items():
         w=lengths.get(cont,1); names_ids=paths.get(tid)
         if not names_ids: continue
         ids=names_ids[1].split("|")
@@ -297,52 +386,100 @@ def prf_presence(a: dict, b: dict, thr=0.1):
 
 # -------------- read HYMET predictions into TaxIDs --------------
 def preds_taxid_from_classified(classified_tsv, taxdb, idmap, paf_path):
-    """
-    Returns dict contig -> TaxID using priority:
-      (1) 'TaxID' column, (2) 'Target'/'tname' via idmap,
-      (3) PAF first‑hit target via idmap, (4) 'Lineage' last name via TaxonKit
-    """
-    cont2tid={}
-    names=set(); pending_by_lineage={}
+    """Map each contig to the most specific resolvable TaxID."""
+    cont2tid: dict[str, str] = {}
+    lineage_records: dict[str, dict] = {}
+    fallback_info: dict[str, dict] = {}
+    all_names: set[str] = set()
+
     if os.path.isfile(classified_tsv):
-        with open(classified_tsv) as f:
-            r=csv.DictReader(f, delimiter="\t")
-            hdr=[(h or "").strip().lower() for h in (r.fieldnames or [])]
-            i_q = hdr.index("query") if "query" in hdr else None
-            i_taxid = hdr.index("taxid") if "taxid" in hdr else None
-            i_target = next((hdr.index(c) for c in ("target","tname") if c in hdr), None)
-            i_lin = hdr.index("lineage") if "lineage" in hdr else None
-            for row in r:
-                q = row[r.fieldnames[i_q]] if i_q is not None else (row.get("Query") or row.get("qname") or row.get("q"))
-                if not q: continue
-                if i_taxid is not None:
-                    tid=(row[r.fieldnames[i_taxid]] or "").strip()
-                    if is_num(tid): cont2tid[q]=tid; continue
-                if i_target is not None:
-                    t=(row[r.fieldnames[i_target]] or "").strip()
-                    t0=t.split("|",1)[0]
-                    if t in idmap: cont2tid[q]=idmap[t]; continue
-                    if t0 in idmap: cont2tid[q]=idmap[t0]; continue
-                    if "." in t0 and t0.split(".",1)[0] in idmap: cont2tid[q]=idmap[t0.split(".",1)[0]]; continue
-                if i_lin is not None:
-                    last=(row[r.fieldnames[i_lin]] or "").strip().split(";")[-1].strip()
-                    if ":" in last: last=last.split(":",1)[1].strip()
-                    if last: pending_by_lineage[q]=last; names.add(last)
+        with open(classified_tsv, encoding="utf-8", errors="ignore") as f:
+            reader = csv.DictReader(f, delimiter="	")
+            raw_fields = reader.fieldnames or []
+            headers = [(h or "").strip().lower() for h in raw_fields]
+            idx_query = headers.index("query") if "query" in headers else None
+            idx_taxid = headers.index("taxid") if "taxid" in headers else None
+            idx_target = next((headers.index(c) for c in ("target", "tname") if c in headers), None)
+            idx_lineage = headers.index("lineage") if "lineage" in headers else None
+            key_query = raw_fields[idx_query] if idx_query is not None else None
+            key_taxid = raw_fields[idx_taxid] if idx_taxid is not None else None
+            key_target = raw_fields[idx_target] if idx_target is not None else None
+            key_lineage = raw_fields[idx_lineage] if idx_lineage is not None else None
+
+            for row in reader:
+                q = row.get(key_query) if key_query else (row.get("Query") or row.get("qname") or row.get("q"))
+                if not q:
+                    continue
+
+                lineage = parse_lineage_string(row.get(key_lineage, "") if key_lineage else row.get("Lineage", ""))
+                if lineage:
+                    lineage_records[q] = lineage
+                    for nm in lineage.values():
+                        if nm:
+                            all_names.add(nm)
+
+                fallback_info[q] = {
+                    "taxid": row.get(key_taxid) if key_taxid else row.get("TaxID"),
+                    "target": row.get(key_target) if key_target else (row.get("Target") or row.get("tname"))
+                }
+
+    name_map = taxonkit_name2taxid(all_names, taxdb) if all_names else {}
+
+    for q, lineage in lineage_records.items():
+        for rank in reversed(RANKS):
+            nm = lineage.get(rank)
+            if not nm:
+                continue
+            entry = name_map.get(nm)
+            if not entry:
+                continue
+            tid = entry[0] if isinstance(entry, tuple) else entry
+            ntid = normalize_taxid(tid)
+            if ntid:
+                cont2tid[q] = ntid
+                break
+
+    for q, info in fallback_info.items():
+        if q in cont2tid:
+            continue
+        raw_tid = info.get("taxid") or ""
+        ntid = normalize_taxid(raw_tid)
+        if ntid:
+            cont2tid[q] = ntid
+
+    for q, info in fallback_info.items():
+        if q in cont2tid:
+            continue
+        target = (info.get("target") or "").strip()
+        if not target:
+            continue
+        base = target.split("|", 1)[0]
+        candidates = [target, base]
+        if "." in base:
+            candidates.append(base.split(".", 1)[0])
+        for cand in candidates:
+            if cand in idmap:
+                ntid = normalize_taxid(idmap[cand])
+                if ntid:
+                    cont2tid[q] = ntid
+                    break
 
     if paf_path and os.path.isfile(paf_path):
-        q2t=paf_firsthit_q2t(paf_path)
-        for q,t in q2t.items():
-            if q in cont2tid: continue
-            t0=t.split("|",1)[0]
-            if t in idmap: cont2tid[q]=idmap[t]; continue
-            if t0 in idmap: cont2tid[q]=idmap[t0]; continue
-            if "." in t0 and t0.split(".",1)[0] in idmap: cont2tid[q]=idmap[t0.split(".",1)[0]]
+        paf_hits = paf_firsthit_q2t(paf_path)
+        for q, target in paf_hits.items():
+            if q in cont2tid:
+                continue
+            base = target.split("|", 1)[0]
+            candidates = [target, base]
+            if "." in base:
+                candidates.append(base.split(".", 1)[0])
+            for cand in candidates:
+                if cand in idmap:
+                    ntid = normalize_taxid(idmap[cand])
+                    if ntid:
+                        cont2tid[q] = ntid
+                        break
 
-    if names:
-        mapped=taxonkit_name2taxid(names, taxdb)
-        for q,nm in pending_by_lineage.items():
-            tid=mapped.get(nm)
-            if tid: cont2tid[q]=tid
     return cont2tid
 
 # -------------- contig-level eval --------------
@@ -409,16 +546,24 @@ def eval_contigs(pred_file, gt_files, taxdb, outdir, pred_fasta=None, gt_fasta=N
             if pid==gid: ok+=1
         per_rank[r]={"n":tot,"acc":(100.0*ok/tot if tot else 0.0),"correct":ok}
 
-    with open(os.path.join(outdir,"contigs_exact.tsv"),"w",newline="") as w:
-        wr=csv.writer(w, delimiter="\t"); wr.writerow(["metric","value"])
-        wr.writerow(["usable_pairs", usable]); wr.writerow(["exact_taxid_matches", exact])
-        wr.writerow(["exact_taxid_accuracy_percent", 100.0*exact/usable if usable else 0.0])
+    exact_path=os.path.join(outdir,"contigs_exact.tsv")
+    perrank_path=os.path.join(outdir,"contigs_per_rank.tsv")
 
-    with open(os.path.join(outdir,"contigs_per_rank.tsv"),"w",newline="") as w:
-        wr=csv.writer(w, delimiter="\t"); wr.writerow(["rank","n","correct","accuracy_percent"])
-        for r in RANKS:
-            m=per_rank.get(r,{"n":0,"correct":0,"acc":0.0})
-            wr.writerow([r, m["n"], m["correct"], f"{m['acc']:.4f}"])
+    if usable > 0:
+        with open(exact_path,"w",newline="") as w:
+            wr=csv.writer(w, delimiter="\t"); wr.writerow(["metric","value"])
+            wr.writerow(["usable_pairs", usable]); wr.writerow(["exact_taxid_matches", exact])
+            wr.writerow(["exact_taxid_accuracy_percent", 100.0*exact/usable if usable else 0.0])
+
+        with open(perrank_path,"w",newline="") as w:
+            wr=csv.writer(w, delimiter="\t"); wr.writerow(["rank","n","correct","accuracy_percent"])
+            for r in RANKS:
+                m=per_rank.get(r,{"n":0,"correct":0,"acc":0.0})
+                wr.writerow([r, m["n"], m["correct"], f"{m['acc']:.4f}"])
+    else:
+        for p in (exact_path, perrank_path):
+            if os.path.exists(p):
+                os.remove(p)
 
     return {"usable_pairs": usable, "exact": exact, "per_rank": per_rank, "pred_n": len(pred_tid), "gt_n": len(gt_map)}
 
