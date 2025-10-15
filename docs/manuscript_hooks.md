@@ -5,8 +5,8 @@ This note captures the locations of quantitative results and figures generated b
 ## Results Section
 
 - **Multi-dataset CAMI outcomes** – `bench/out/summary_per_tool_per_sample.tsv` (profile metrics per rank) and `bench/out/leaderboard_by_rank.tsv` (mean L1/Bray–Curtis, Precision/Recall/F1).
-- **Real-world case study** – `case/out/<sample>/top_taxa.tsv`, `case/out/<sample>/hymet/profile.cami.tsv`, optional `case/out/<sample>/metaphlan/*.tsv`. Runtime/memory: `case/out/runtime_memory.tsv` (stage = `run`).
-- **Database ablation behaviour** – `case/ablation_summary.tsv` (fallback percentages), ablated profiles under `case/ablation/<sample>/level_*/hymet/`. Runtime deltas recorded in `case/out/runtime_memory.tsv` (stage = `ablation_<level>`).
+- **Real-world case study** – `case/out/<sample>/top_taxa.tsv`, `case/out/<sample>/hymet/profile.cami.tsv`, optional MetaPhlAn outputs (`case/out/<sample>/metaphlan/comparison.tsv`, `case/out/<sample>/metaphlan/metrics.tsv` for symmetric KL + Spearman). Runtime/memory: `case/out/runtime_memory.tsv` (stage = `run`).
+- **Database ablation behaviour** – `case/ablation_summary.tsv` (fallback percentages), `case/ablation_eval_summary.tsv` (F1/precision/recall + misassignment when truth data is provided), ablated profiles under `case/ablation/<sample>/level_*/hymet/`. Runtime deltas recorded in `case/out/runtime_memory.tsv` (stage = `ablation_<level>` and `ablation_eval_<level>`).
 
 ## Methods Section
 
@@ -17,14 +17,14 @@ This note captures the locations of quantitative results and figures generated b
 ## Tables
 
 - **Database composition** – Summaries from `bench/db/*/.build.stamp` plus ablation logs (`case/ablation/refsets/ablation_summary.tsv`).
-- **Per-dataset metrics** – CAMI: `bench/out/summary_per_tool_per_sample.tsv`; Case study: `case/out/<sample>/top_taxa.tsv`; Ablation: `case/ablation_summary.tsv`.
+- **Per-dataset metrics** – CAMI: `bench/out/summary_per_tool_per_sample.tsv`; Case study: `case/out/<sample>/top_taxa.tsv` plus MetaPhlAn metrics; Ablation: `case/ablation_summary.tsv` and `case/ablation_eval_summary.tsv`.
 - **Absolute time/memory** – `bench/out/runtime_memory.tsv` and `case/out/runtime_memory.tsv` (columns: wall, user, sys, max_rss_gb, I/O MB).
 
 ## Figures
 
 - **CAMI performance plots** – `bench/plot/make_figures.py` generates `fig_accuracy_by_rank.png`, `fig_f1_by_rank.png`, `fig_l1_braycurtis.png`, `fig_per_sample_f1_stack.png`. Update colour palette before manuscript submission if needed.
-- **Case-study visuals** – Use `case/out/<sample>/top_taxa.tsv` (bar chart) and `case/out/<sample>/metaphlan/comparison.tsv` for cross-tool comparisons.
-- **Ablation curves** – Build from `case/ablation_summary.tsv` (rank fallback) and the corresponding runtime entries (stage-prefixed rows in `case/out/runtime_memory.tsv`).
+- **Case-study visuals** – Use `case/out/<sample>/top_taxa.tsv` (bar chart) and `case/out/<sample>/metaphlan/*` for cross-tool comparisons.
+- **Ablation curves** – `case/plot_ablation.py` emits `fig_ablation_rank_fallback.png`, `fig_ablation_rank_stack.png`, and (when truth data exists) `fig_ablation_f1_by_rank.png` from `case/ablation_summary.tsv` and `case/ablation_eval_summary.tsv`. Reference runtime deltas via stage-prefixed rows in `case/out/runtime_memory.tsv`.
 
 ## Citations & Clarifications
 

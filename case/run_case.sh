@@ -60,7 +60,7 @@ append_summary_header "${TOP_SUMMARY}"
 
 while IFS= read -r line || [[ -n "${line}" ]]; do
   [[ -z "${line}" || "${line}" == \#* || "${line}" == sample_id* ]] && continue
-  IFS=$'\0' read -r sample_id contigs expected_taxa citation <<<"$(manifest_split_line "${line}")"
+  IFS=$'\0' read -r sample_id contigs truth_contigs truth_profile expected_taxa citation <<<"$(manifest_split_line "${line}")"
 
   if [[ -z "${sample_id}" ]]; then
     log "Skipping manifest line with empty sample_id."
@@ -117,6 +117,15 @@ with open(out_path, "w", newline="") as out:
         writer.writerow([rank, taxid, taxpathsn, taxpath, f"{pct:.6f}"])
 PY
 
+    if [[ -s "${metrics}" ]]; then
+      summary_metrics="${OUT_ROOT}/metaphlan_metrics.tsv"
+      if [[ ! -s "${summary_metrics}" ]]; then
+        ensure_dir "$(dirname "${summary_metrics}")"
+        echo -e "sample\tSymmetric_KL_Divergence\tSpearman_Rank" > "${summary_metrics}"
+      fi
+      tail -n +2 "${metrics}" >> "${summary_metrics}"
+    fi
+
   python3 - "${TOP_SUMMARY}" "${sample_id}" "${top_table}" <<'PY'
 import csv, sys, pathlib
 summary_path, sample_id, table_path = sys.argv[1:4]
@@ -135,6 +144,8 @@ PY
 {
   "sample_id": "${sample_id}",
   "contigs": "${contigs_abs}",
+  "truth_contigs": "${truth_contigs}",
+  "truth_profile": "${truth_profile}",
   "expected_taxa": "${expected_taxa}",
   "citation": "${citation}",
   "hymet_profile": "${profile}",
@@ -160,11 +171,16 @@ EOF
 
     if [[ -s "${mp_profile}" ]]; then
       comparison="${metaphlan_out}/comparison.tsv"
-      python3 - "${profile}" "${mp_profile}" "${comparison}" <<'PY'
+      metrics="${metaphlan_out}/metrics.tsv"
+      python3 - "${profile}" "${mp_profile}" "${comparison}" "${metrics}" "${sample_id}" <<'PY'
 import csv, sys, math
-hymet_path, mp_path, out_path = sys.argv[1:4]
+from collections import OrderedDict
+
+hymet_path, mp_path, comp_path, metrics_path, sample_id = sys.argv[1:6]
+EPS = 1e-8
+
 def load_profile(path):
-    prof = {}
+    prof = OrderedDict()
     with open(path) as fh:
         for line in fh:
             line = line.strip()
@@ -177,16 +193,82 @@ def load_profile(path):
             pct = float(parts[4])
             prof[taxpathsn] = pct
     return prof
+
+def build_distribution(hymet, meta):
+    taxa = sorted(set(hymet) | set(meta))
+    hp = []
+    mp = []
+    for tax in taxa:
+        hp.append(max(hymet.get(tax, 0.0), 0.0))
+        mp.append(max(meta.get(tax, 0.0), 0.0))
+    total_h = sum(hp)
+    total_m = sum(mp)
+    if total_h <= 0:
+        hp = [1.0 / len(hp) for _ in hp]
+    else:
+        hp = [v / total_h for v in hp]
+    if total_m <= 0:
+        mp = [1.0 / len(mp) for _ in mp]
+    else:
+        mp = [v / total_m for v in mp]
+    return taxa, hp, mp
+
+def symmetric_kl(p, q):
+    kl_pq = 0.0
+    kl_qp = 0.0
+    for pi, qi in zip(p, q):
+        pi = max(pi, EPS)
+        qi = max(qi, EPS)
+        kl_pq += pi * math.log(pi / qi)
+        kl_qp += qi * math.log(qi / pi)
+    return 0.5 * (kl_pq + kl_qp)
+
+def ranks(values):
+    n = len(values)
+    order = sorted(enumerate(values), key=lambda x: x[1], reverse=True)
+    ranks = [0.0] * n
+    i = 0
+    while i < n:
+        j = i
+        while j + 1 < n and order[j + 1][1] == order[i][1]:
+            j += 1
+        rank_value = (i + j + 2) / 2.0
+        for k in range(i, j + 1):
+            idx = order[k][0]
+            ranks[idx] = rank_value
+        i = j + 1
+    return ranks
+
+def spearman(p, q):
+    if len(p) < 2:
+        return float("nan")
+    rp = ranks(p)
+    rq = ranks(q)
+    mean_p = sum(rp) / len(rp)
+    mean_q = sum(rq) / len(rq)
+    num = sum((a - mean_p) * (b - mean_q) for a, b in zip(rp, rq))
+    den_p = math.sqrt(sum((a - mean_p) ** 2 for a in rp))
+    den_q = math.sqrt(sum((b - mean_q) ** 2 for b in rq))
+    if den_p == 0 or den_q == 0:
+        return float("nan")
+    return num / (den_p * den_q)
+
 hymet = load_profile(hymet_path)
-mp = load_profile(mp_path)
-taxa = sorted(set(hymet) | set(mp))
-with open(out_path, "w", newline="") as out:
+meta = load_profile(mp_path)
+taxa, hp, mp = build_distribution(hymet, meta)
+
+with open(comp_path, "w", newline="") as out:
     writer = csv.writer(out, delimiter="\t")
     writer.writerow(["TaxPathSN", "HYMET_Percent", "MetaPhlAn_Percent", "Absolute_Difference"])
-    for taxon in taxa:
-        h = hymet.get(taxon, 0.0)
-        m = mp.get(taxon, 0.0)
-        writer.writerow([taxon, f"{h:.6f}", f"{m:.6f}", f"{abs(h-m):.6f}"])
+    for tax, h, m in zip(taxa, hp, mp):
+        writer.writerow([tax, f"{h*100:.6f}", f"{m*100:.6f}", f"{abs(h-m)*100:.6f}"])
+
+sym_kl = symmetric_kl(hp, mp)
+spearman_corr = spearman(hp, mp)
+with open(metrics_path, "w", newline="") as out:
+    writer = csv.writer(out, delimiter="\t")
+    writer.writerow(["Sample", "Symmetric_KL_Divergence", "Spearman_Rank"])
+    writer.writerow([sample_id, f"{sym_kl:.6f}", f"{spearman_corr:.6f}"])
 PY
     else
       log "WARNING: MetaPhlAn profile missing for ${sample_id}; comparison skipped."

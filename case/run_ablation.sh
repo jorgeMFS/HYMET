@@ -57,11 +57,11 @@ ensure_dir "${OUT_ROOT}"
 
 # Determine sample (default first row in manifest)
 if [[ -z "${SAMPLE_ID}" ]]; then
-  while IFS= read -r line || [[ -n "${line}" ]]; do
-    [[ -z "${line}" || "${line}" == \#* || "${line}" == sample_id* ]] && continue
-    IFS=$'\0' read -r SAMPLE_ID contigs _ <<<"$(manifest_split_line "${line}")"
-    break
-  done < "${MANIFEST}"
+while IFS= read -r line || [[ -n "${line}" ]]; do
+  [[ -z "${line}" || "${line}" == \#* || "${line}" == sample_id* ]] && continue
+  IFS=$'\0' read -r SAMPLE_ID contigs _truthc _truthp _expected _citation <<<"$(manifest_split_line "${line}")"
+  break
+done < "${MANIFEST}"
   [[ -n "${SAMPLE_ID}" ]] || die "No sample rows found in manifest ${MANIFEST}"
 fi
 
@@ -71,11 +71,11 @@ EXPECTED=""
 CITATION=""
 while IFS= read -r line || [[ -n "${line}" ]]; do
   [[ -z "${line}" || "${line}" == \#* || "${line}" == sample_id* ]] && continue
-  IFS=$'\0' read -r sid contigs expected citation <<<"$(manifest_split_line "${line}")"
+  IFS=$'\0' read -r sid contigs truth_contigs truth_profile expected citation <<<"$(manifest_split_line "${line}")"
   if [[ "${sid}" == "${SAMPLE_ID}" ]]; then
     CONTIGS="$(resolve_path "${contigs}")"
-    EXPECTED="${expected}"
-    CITATION="${citation}"
+    TRUTH_CONTIGS="$(resolve_path "${truth_contigs}")"
+    TRUTH_PROFILE="$(resolve_path "${truth_profile}")"
     break
   fi
 done < "${MANIFEST}"
@@ -152,6 +152,70 @@ PY
   classified="${hymet_out}/classified_sequences.tsv"
   [[ -s "${classified}" ]] || { log "WARNING: classified_sequences.tsv missing for ${level_label}"; continue; }
 
+  if [[ -n "${TRUTH_PROFILE}" && -s "${TRUTH_PROFILE}" && -n "${TRUTH_CONTIGS}" && -s "${TRUTH_CONTIGS}" ]]; then
+    eval_stage="${SAMPLE_ID}_abl${level_label}"
+    THREADS="${THREADS}" "${MEASURE}" \
+      --tool hymet \
+      --sample "${eval_stage}" \
+      --stage "ablation_eval_${level_label}" \
+      --out "${RUNTIME_TSV}" \
+      -- "${BENCH_ROOT}/lib/run_eval.sh" \
+            --sample "${SAMPLE_ID}" \
+            --tool hymet \
+            --pred-profile "${profile}" \
+            --truth-profile "${TRUTH_PROFILE}" \
+            --pred-contigs "${classified}" \
+            --truth-contigs "${TRUTH_CONTIGS}" \
+            --pred-fasta "${CONTIGS}" \
+            --threads "${THREADS}"
+
+    profile_eval="${hymet_out}/eval/profile_summary.tsv"
+    contig_eval="${hymet_out}/eval/contigs_per_rank.tsv"
+    if [[ -s "${profile_eval}" ]]; then
+      python3 - "${profile_eval}" "${contig_eval}" "${EVAL_SUMMARY}" "${level_label}" "${level_fraction}" <<'PY'
+import csv, sys
+from pathlib import Path
+profile_path, contig_path, summary_path, level_label, level_fraction = sys.argv[1:6]
+profile_rows = {}
+with open(profile_path) as fh:
+    reader = csv.DictReader(fh, delimiter="\t")
+    for row in reader:
+        profile_rows[row["rank"]] = row
+
+contig_rows = {}
+if contig_path and contig_path != "" and Path(contig_path).exists():
+    with open(contig_path) as fh:
+        reader = csv.DictReader(fh, delimiter="\t")
+        for row in reader:
+            contig_rows[row["rank"]] = row
+
+with open(summary_path, "a", newline="") as out:
+    writer = csv.writer(out, delimiter="\t")
+    for rank, prow in profile_rows.items():
+        contig_acc = contig_rows.get(rank, {}).get("accuracy_percent")
+        if contig_acc is None or contig_acc == "":
+            contig_acc = ""
+            misassign = ""
+        else:
+            acc_val = float(contig_acc)
+            contig_acc = f"{acc_val:.2f}"
+            misassign = f"{max(0.0, 100.0 - acc_val):.2f}"
+        writer.writerow([
+            level_label,
+            level_fraction,
+            rank,
+            prow.get("F1_%", ""),
+            prow.get("Precision_%", ""),
+            prow.get("Recall_%", ""),
+            prow.get("L1_total_variation_pctpts", ""),
+            prow.get("BrayCurtis_pct", ""),
+            contig_acc,
+            misassign,
+        ])
+PY
+    fi
+  fi
+
   python3 - "${SUMMARY_TSV}" "${classified}" "${level_label}" "${level_fraction}" <<'PY'
 import csv, sys
 summary_path, classified_path, level_label, level_fraction = sys.argv[1:5]
@@ -187,3 +251,15 @@ done
 
 restore_fastas
 log "[ablation] Results written under ${OUT_ROOT}"
+
+python3 "${CASE_ROOT}/plot_ablation.py" \
+  --summary "${SUMMARY_TSV}" \
+  --eval "${EVAL_SUMMARY}" \
+  --outdir "${OUT_ROOT}/figures"
+EVAL_SUMMARY="${OUT_ROOT}/ablation_eval_summary.tsv"
+if [[ ! -s "${EVAL_SUMMARY}" ]]; then
+  ensure_dir "$(dirname "${EVAL_SUMMARY}")"
+  cat <<'EOF' >"${EVAL_SUMMARY}"
+level_label	level_fraction	rank	F1	Precision	Recall	L1_total_variation_pctpts	BrayCurtis_pct	Contig_Accuracy_pct	Contig_Misassignment_pct
+EOF
+fi
