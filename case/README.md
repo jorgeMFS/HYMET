@@ -7,6 +7,7 @@ This directory complements the CAMI benchmark harness with scripts to run HYMET 
 ```
 case/
 ├── manifest.tsv          # Case-study samples (sample_id, contigs_fa, truth_contigs_tsv, truth_profile_tsv, expected_taxa, citation)
+├── fetch_case_data.sh    # Helper to download the referenced contig FASTA files
 ├── run_case.sh           # Execute HYMET (and optional MetaPhlAn sanity checks)
 ├── run_ablation.sh       # Run HYMET across reference ablation levels
 ├── ablate_db.py          # Produce ablated FASTA references
@@ -26,7 +27,16 @@ case/
    gut_case	/data/case/gut_assembly.fna			"Bacteroides fragilis;Escherichia coli"	"Doe et al., Microbiome (2024)"
    ```
 
-2. **Run the case study**
+2. **Fetch data (optional helper)**
+
+   ```bash
+   cd HYMET/case
+   ./fetch_case_data.sh              # downloads both samples to /data/case
+   ./fetch_case_data.sh zymo_mc      # download only the mock community
+   ./fetch_case_data.sh --dest /tmp/case gut_case
+   ```
+
+3. **Run the case study**
 
    ```bash
    cd HYMET/case
@@ -40,7 +50,7 @@ case/
    - `metadata.json` summarising inputs
    - `out/runtime_memory.tsv` capturing wall time, CPU time, RSS, and I/O
 
-3. **Ablation experiment**
+4. **Ablation experiment**
 
    Remove increasing fractions of dominant taxa from the shared FASTA and re-run HYMET:
    ```bash
