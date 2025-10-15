@@ -8,7 +8,7 @@ RESULTADOS_PAF="$4"     # Path to the alignment results (resultados.paf).
 
 # Create the reference set index
 echo "Creating index with minimap2..."
-minimap2 -d "$NT_MMI" "$REFERENCE_SET" # General index
+minimap2 -I2g -d "$NT_MMI" "$REFERENCE_SET" # General index
 
 # Check if the index creation was successful
 if [ $? -ne 0 ]; then

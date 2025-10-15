@@ -185,6 +185,35 @@ The tool generates a `classified_sequences.tsv` file in the `output/` directory 
       - Formatting into paired-end reads
     - **`GCFtocombinedfasta.py`**: Combines all GCFs from each domain into a single FASTA file, separating sequences by identifier. This script is used as input for most of the tools.
 
+## CAMI Benchmarking
+
+HYMET includes benchmarking capabilities against CAMI datasets for performance evaluation.
+
+### Quick Start
+
+```bash
+# Basic usage
+bash benchmark_cami.sh
+
+# Custom input/output
+INPUT_FASTA=/path/to/sample.fna OUTDIR=/path/to/results THREADS=8 bash benchmark_cami.sh
+```
+
+### Output
+
+Results are saved to `$OUTDIR/eval/`:
+- `profile_summary.tsv` - Profile-level metrics (L1, Bray-Curtis, Precision/Recall/F1)
+- `contigs_per_rank.tsv` - Contig-level accuracy by taxonomic rank
+- `summary.txt` - Human-readable results summary
+
+### Configuration
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `INPUT_FASTA` | `/data/cami/sample_0.fna` | Input FASTA file |
+| `OUTDIR` | `/data/hymet_out/sample_0` | Output directory |
+| `THREADS` | `16` | Number of threads |
+
 ## Support
 
 For questions or issues, please open an [issue](https://github.com/ieeta-pt/HYMET/issues) in the repository.
