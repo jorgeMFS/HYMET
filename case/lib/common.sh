@@ -45,8 +45,11 @@ manifest_split_line(){
   local line="$1"
   python3 - <<'PY' -- "${line}"
 import csv, sys
-line = sys.argv[1]
+SEP = "\x1f"
+if len(sys.argv) < 3:
+    raise SystemExit("manifest_split_line requires a non-empty line")
+line = sys.argv[2]
 row = next(csv.reader([line], delimiter='\t'))
-sys.stdout.write("\0".join(row))
+sys.stdout.write(SEP.join(row))
 PY
 }

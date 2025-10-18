@@ -60,7 +60,8 @@ append_summary_header "${TOP_SUMMARY}"
 
 while IFS= read -r line || [[ -n "${line}" ]]; do
   [[ -z "${line}" || "${line}" == \#* || "${line}" == sample_id* ]] && continue
-  IFS=$'\0' read -r sample_id contigs truth_contigs truth_profile expected_taxa citation <<<"$(manifest_split_line "${line}")"
+  IFS=$'\x1f' read -r sample_id contigs truth_contigs truth_profile expected_taxa citation <<<"$(manifest_split_line "${line}")"
+  log "[case] parsed row: sample='${sample_id}' contigs='${contigs}'"
 
   if [[ -z "${sample_id}" ]]; then
     log "Skipping manifest line with empty sample_id."
@@ -116,15 +117,6 @@ with open(out_path, "w", newline="") as out:
     for pct, rank, taxid, taxpathsn, taxpath in rows[:top_n]:
         writer.writerow([rank, taxid, taxpathsn, taxpath, f"{pct:.6f}"])
 PY
-
-    if [[ -s "${metrics}" ]]; then
-      summary_metrics="${OUT_ROOT}/metaphlan_metrics.tsv"
-      if [[ ! -s "${summary_metrics}" ]]; then
-        ensure_dir "$(dirname "${summary_metrics}")"
-        echo -e "sample\tSymmetric_KL_Divergence\tSpearman_Rank" > "${summary_metrics}"
-      fi
-      tail -n +2 "${metrics}" >> "${summary_metrics}"
-    fi
 
   python3 - "${TOP_SUMMARY}" "${sample_id}" "${top_table}" <<'PY'
 import csv, sys, pathlib
@@ -270,6 +262,14 @@ with open(metrics_path, "w", newline="") as out:
     writer.writerow(["Sample", "Symmetric_KL_Divergence", "Spearman_Rank"])
     writer.writerow([sample_id, f"{sym_kl:.6f}", f"{spearman_corr:.6f}"])
 PY
+      if [[ -s "${metrics}" ]]; then
+        summary_metrics="${OUT_ROOT}/metaphlan_metrics.tsv"
+        if [[ ! -s "${summary_metrics}" ]]; then
+          ensure_dir "$(dirname "${summary_metrics}")"
+          echo -e "sample\tSymmetric_KL_Divergence\tSpearman_Rank" > "${summary_metrics}"
+        fi
+        tail -n +2 "${metrics}" >> "${summary_metrics}"
+      fi
     else
       log "WARNING: MetaPhlAn profile missing for ${sample_id}; comparison skipped."
     fi

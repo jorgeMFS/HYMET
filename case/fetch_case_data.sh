@@ -70,7 +70,7 @@ ensure_dir "${DEST}"
 
 fetch_zymo(){
   local target="${DEST}/zymo_mc_contigs.fna"
-  local url="https://nanopore.s3.climb.ac.uk/mockcommunity/v2/PROM25_even_0_3_23.ctg.cns.fa"
+  local url="http://nanopore.s3.climb.ac.uk/mockcommunity/v3/7cd60d3b-eafb-48d1-9aab-c8701232f2f8.ctg.cns.fa"
   download "${url}" "${target}"
   if [[ -s "${target}" ]]; then
     echo "[fetch] zymo_mc sha256: $(SHA256 "${target}")"

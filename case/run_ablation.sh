@@ -59,7 +59,7 @@ ensure_dir "${OUT_ROOT}"
 if [[ -z "${SAMPLE_ID}" ]]; then
 while IFS= read -r line || [[ -n "${line}" ]]; do
   [[ -z "${line}" || "${line}" == \#* || "${line}" == sample_id* ]] && continue
-  IFS=$'\0' read -r SAMPLE_ID contigs _truthc _truthp _expected _citation <<<"$(manifest_split_line "${line}")"
+  IFS=$'\x1f' read -r SAMPLE_ID contigs _truthc _truthp _expected _citation <<<"$(manifest_split_line "${line}")"
   break
 done < "${MANIFEST}"
   [[ -n "${SAMPLE_ID}" ]] || die "No sample rows found in manifest ${MANIFEST}"
@@ -67,11 +67,13 @@ fi
 
 # Resolve contigs path for the selected sample
 CONTIGS=""
+TRUTH_CONTIGS=""
+TRUTH_PROFILE=""
 EXPECTED=""
 CITATION=""
 while IFS= read -r line || [[ -n "${line}" ]]; do
   [[ -z "${line}" || "${line}" == \#* || "${line}" == sample_id* ]] && continue
-  IFS=$'\0' read -r sid contigs truth_contigs truth_profile expected citation <<<"$(manifest_split_line "${line}")"
+  IFS=$'\x1f' read -r sid contigs truth_contigs truth_profile expected citation <<<"$(manifest_split_line "${line}")"
   if [[ "${sid}" == "${SAMPLE_ID}" ]]; then
     CONTIGS="$(resolve_path "${contigs}")"
     TRUTH_CONTIGS="$(resolve_path "${truth_contigs}")"
@@ -99,6 +101,14 @@ if [[ ! -s "${SUMMARY_TSV}" ]]; then
   ensure_dir "$(dirname "${SUMMARY_TSV}")"
   cat <<'EOF' >"${SUMMARY_TSV}"
 level_label	level_fraction	total_classified	assigned_species_pct	assigned_genus_pct	assigned_family_pct	assigned_higher_pct
+EOF
+fi
+
+EVAL_SUMMARY="${OUT_ROOT}/ablation_eval_summary.tsv"
+if [[ ! -s "${EVAL_SUMMARY}" ]]; then
+  ensure_dir "$(dirname "${EVAL_SUMMARY}")"
+  cat <<'EOF' >"${EVAL_SUMMARY}"
+level_label	level_fraction	rank	F1	Precision	Recall	L1_total_variation_pctpts	BrayCurtis_pct	Contig_Accuracy_pct	Contig_Misassignment_pct
 EOF
 fi
 
@@ -167,7 +177,8 @@ PY
             --pred-contigs "${classified}" \
             --truth-contigs "${TRUTH_CONTIGS}" \
             --pred-fasta "${CONTIGS}" \
-            --threads "${THREADS}"
+            --threads "${THREADS}" \
+            --outdir "${hymet_out}/eval"
 
     profile_eval="${hymet_out}/eval/profile_summary.tsv"
     contig_eval="${hymet_out}/eval/contigs_per_rank.tsv"
@@ -256,10 +267,3 @@ python3 "${CASE_ROOT}/plot_ablation.py" \
   --summary "${SUMMARY_TSV}" \
   --eval "${EVAL_SUMMARY}" \
   --outdir "${OUT_ROOT}/figures"
-EVAL_SUMMARY="${OUT_ROOT}/ablation_eval_summary.tsv"
-if [[ ! -s "${EVAL_SUMMARY}" ]]; then
-  ensure_dir "$(dirname "${EVAL_SUMMARY}")"
-  cat <<'EOF' >"${EVAL_SUMMARY}"
-level_label	level_fraction	rank	F1	Precision	Recall	L1_total_variation_pctpts	BrayCurtis_pct	Contig_Accuracy_pct	Contig_Misassignment_pct
-EOF
-fi
