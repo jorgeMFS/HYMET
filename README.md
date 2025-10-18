@@ -35,7 +35,7 @@ Once the dependencies are installed (either via Conda or Docker) you can drive e
 ./bin/hymet ablation --sample zymo_mc --taxa 1423,562 --levels 0,0.5,1.0 --threads 4
 ```
 
-For the full list of subcommands run `bin/hymet --help`. The legacy `main.pl` entry point is still available via `bin/hymet legacy -- …`.
+For the full list of subcommands run `bin/hymet --help`. The legacy `main.pl` entry point is still available via `bin/hymet legacy -- …`. You can call the CLI from any working directory by exporting `HYMET_ROOT=/path/to/HYMET` (or passing `--hymet-root`).
 
 ### Getting Example Datasets
 
