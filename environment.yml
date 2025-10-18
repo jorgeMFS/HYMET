@@ -12,6 +12,7 @@ dependencies:
   - pandas
   - numpy
   - pip
+  - pytest
   - biopython
   - csvkit
   - gzip
