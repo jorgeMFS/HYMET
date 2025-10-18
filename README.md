@@ -17,6 +17,47 @@
 
 Follow the steps below to install and configure **HYMET**
 
+### Quick Start (Unified CLI)
+
+Once the dependencies are installed (either via Conda or Docker) you can drive every workflow through the bundled CLI:
+
+```bash
+# single-sample run
+./bin/hymet run --contigs /path/to/sample.fna --out ./out/sample --threads 16
+
+# CAMI benchmark harness
+./bin/hymet bench --manifest bench/cami_manifest.tsv --tools hymet,kraken2
+
+# Real-data case study
+./bin/hymet case --manifest case/manifest_zymo.tsv --threads 8
+
+# Reference ablation experiment
+./bin/hymet ablation --sample zymo_mc --taxa 1423,562 --levels 0,0.5,1.0 --threads 4
+```
+
+For the full list of subcommands run `bin/hymet --help`. The legacy `main.pl` entry point is still available via `bin/hymet legacy -- …`. You can call the CLI from any working directory by exporting `HYMET_ROOT=/path/to/HYMET` (or passing `--hymet-root`).
+
+### Getting Example Datasets
+
+Most workflows expect the example datasets referenced in the manifests. The repository ships helper scripts to fetch them:
+
+```bash
+# Download the CAMI subsets referenced in bench/cami_manifest.tsv
+./bench/fetch_cami.sh            # add --dry-run first if you just want to inspect
+
+# Download the case-study contigs (Zymo mock community + MGnify gut sample)
+./case/fetch_case_data.sh --dest case/data zymo_mc gut_case
+
+# Optional: recompute curated Zymo truth tables
+./bin/hymet truth build-zymo \
+  --contigs case/truth/zymo_mc/truth_contigs.tsv \
+  --paf case/truth/zymo_mc/zymo_mc_vs_refs.paf \
+  --out-contigs case/truth/zymo_mc/truth_contigs.tsv \
+  --out-profile case/truth/zymo_mc/truth_profile.cami.tsv
+```
+
+Large reference sketches (`data/sketch*.msh`) must still be downloaded separately (links below). Place them under `HYMET/data/` and decompress as needed before running the CLI.
+
 ### 1. Installation with Conda (Recommended)
 
 The easiest way to install HYMET is through Bioconda:
