@@ -78,6 +78,12 @@ if [[ ! -s "${TRUTH_PROFILE}" ]]; then
   exit 0
 fi
 
+# Align predicted superkingdom taxids with the truth profile before scoring.
+FIX_SUPERKINGDOM="${BENCH_ROOT}/tools/fix_superkingdom_taxids.py"
+if [[ -f "${FIX_SUPERKINGDOM}" ]]; then
+  python3 "${FIX_SUPERKINGDOM}" --profile "${PRED_PROFILE}" --truth-profile "${TRUTH_PROFILE}" || log "WARNING: superkingdom normalization failed for ${TOOL}/${SAMPLE}"
+fi
+
 log "Evaluating ${TOOL} for ${SAMPLE}"
 
 python3 "${HYMET_ROOT}/tools/eval_cami.py" \
