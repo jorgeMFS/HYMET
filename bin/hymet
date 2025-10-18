@@ -8,11 +8,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Optional
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
-BENCH_ROOT = REPO_ROOT / "bench"
-CASE_ROOT = REPO_ROOT / "case"
+from typing import List, Optional, Sequence
 
 
 def run_command(cmd: List[str], *, cwd: Optional[Path] = None, env: Optional[dict] = None, dry_run: bool = False) -> None:
@@ -34,8 +30,9 @@ def add_common_env(args, env: dict) -> None:
 
 
 def command_run(args) -> None:
+    repo_root: Path = args.repo_root
     env = os.environ.copy()
-    env["ROOT"] = str(REPO_ROOT)
+    env["ROOT"] = str(repo_root)
     env["INPUT_FASTA"] = str(Path(args.contigs).resolve())
     env["OUTDIR"] = str(Path(args.out).resolve())
     env["THREADS"] = str(args.threads)
@@ -46,17 +43,18 @@ def command_run(args) -> None:
     if args.assembly_summary_dir:
         env["ASSEMBLY_SUMMARY_DIR"] = str(Path(args.assembly_summary_dir).resolve())
     add_common_env(args, env)
-    cmd = [str(REPO_ROOT / "run_hymet_cami.sh")]
-    run_command(cmd, cwd=REPO_ROOT, env=env, dry_run=args.dry_run)
+    cmd = [str(repo_root / "run_hymet_cami.sh")]
+    run_command(cmd, cwd=repo_root, env=env, dry_run=args.dry_run)
 
 
 def command_bench(args) -> None:
+    bench_root: Path = args.bench_root
     env = os.environ.copy()
     if args.threads is not None:
         env["THREADS"] = str(args.threads)
     add_common_env(args, env)
 
-    cmd = [str(BENCH_ROOT / "run_all_cami.sh")]
+    cmd = [str(bench_root / "run_all_cami.sh")]
     if args.manifest:
         cmd.extend(["--manifest", str(Path(args.manifest).resolve())])
     if args.tools:
@@ -69,32 +67,34 @@ def command_bench(args) -> None:
         cmd.append("--resume")
     if args.extra:
         cmd.extend(args.extra)
-    run_command(cmd, cwd=BENCH_ROOT, env=env, dry_run=args.dry_run)
+    run_command(cmd, cwd=bench_root, env=env, dry_run=args.dry_run)
 
 
 def command_case(args) -> None:
+    case_root: Path = args.case_root
     env = os.environ.copy()
     if args.threads is not None:
         env["THREADS"] = str(args.threads)
     add_common_env(args, env)
 
-    cmd = [str(CASE_ROOT / "run_case.sh")]
+    cmd = [str(case_root / "run_case.sh")]
     if args.manifest:
         cmd.extend(["--manifest", str(Path(args.manifest).resolve())])
     if args.out:
         cmd.extend(["--out", str(Path(args.out).resolve())])
     if args.extra:
         cmd.extend(args.extra)
-    run_command(cmd, cwd=CASE_ROOT, env=env, dry_run=args.dry_run)
+    run_command(cmd, cwd=case_root, env=env, dry_run=args.dry_run)
 
 
 def command_ablation(args) -> None:
+    case_root: Path = args.case_root
     env = os.environ.copy()
     if args.threads is not None:
         env["THREADS"] = str(args.threads)
     add_common_env(args, env)
 
-    cmd = [str(CASE_ROOT / "run_ablation.sh")]
+    cmd = [str(case_root / "run_ablation.sh")]
     if args.sample:
         cmd.extend(["--sample", args.sample])
     if args.taxa:
@@ -109,15 +109,16 @@ def command_ablation(args) -> None:
         cmd.extend(["--out", str(Path(args.out).resolve())])
     if args.extra:
         cmd.extend(args.extra)
-    run_command(cmd, cwd=CASE_ROOT, env=env, dry_run=args.dry_run)
+    run_command(cmd, cwd=case_root, env=env, dry_run=args.dry_run)
 
 
 def command_truth_build_zymo(args) -> None:
+    case_root: Path = args.case_root
     env = os.environ.copy()
-    seqmap = args.seqmap or CASE_ROOT / "truth" / "zymo_refs" / "seqid2taxid.tsv"
+    seqmap = args.seqmap or case_root / "truth" / "zymo_refs" / "seqid2taxid.tsv"
     cmd = [
         "python",
-        str(CASE_ROOT / "truth" / "build_zymo_truth.py"),
+        str(case_root / "truth" / "build_zymo_truth.py"),
         "--contigs",
         str(Path(args.contigs).resolve()),
         "--seqmap",
@@ -129,12 +130,13 @@ def command_truth_build_zymo(args) -> None:
         "--out-profile",
         str(Path(args.out_profile).resolve()),
     ]
-    run_command(cmd, cwd=CASE_ROOT, env=env, dry_run=args.dry_run)
+    run_command(cmd, cwd=case_root, env=env, dry_run=args.dry_run)
 
 
 def command_legacy(args) -> None:
-    cmd = ["perl", str(REPO_ROOT / "main.pl"), *args.legacy_args]
-    run_command(cmd, cwd=REPO_ROOT, env=None, dry_run=args.dry_run)
+    repo_root: Path = args.repo_root
+    cmd = ["perl", str(repo_root / "main.pl"), *args.legacy_args]
+    run_command(cmd, cwd=repo_root, env=None, dry_run=args.dry_run)
 
 
 def add_common_arguments(parser: argparse.ArgumentParser) -> None:
@@ -147,6 +149,10 @@ def add_common_arguments(parser: argparse.ArgumentParser) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="HYMET unified command-line interface")
+    parser.add_argument(
+        "--hymet-root",
+        help="Path to the HYMET repository. Defaults to HYMET_ROOT env or auto-discovery.",
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     run_parser = subparsers.add_parser("run", help="Run HYMET on a single sample")
@@ -205,9 +211,44 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: Optional[List[str]] = None) -> int:
+def locate_repo_root(explicit: Optional[str]) -> Path:
+    candidates: List[Path] = []
+    if explicit:
+        candidates.append(Path(explicit))
+    env_root = os.environ.get("HYMET_ROOT")
+    if env_root:
+        candidates.append(Path(env_root))
+    script_dir = Path(__file__).resolve().parent
+    candidates.append(script_dir)
+    candidates.append(script_dir.parent)
+    cwd = Path.cwd()
+    candidates.append(cwd)
+    candidates.extend(cwd.parents)
+
+    seen = set()
+    for candidate in candidates:
+        if candidate is None:
+            continue
+        candidate = candidate.resolve()
+        if candidate in seen:
+            continue
+        seen.add(candidate)
+        bench_marker = candidate / "bench" / "run_all_cami.sh"
+        case_marker = candidate / "case" / "run_case.sh"
+        if bench_marker.exists() and case_marker.exists():
+            return candidate
+    raise SystemExit(
+        "Unable to locate HYMET repository root. Set --hymet-root or HYMET_ROOT to the cloned repository path."
+    )
+
+
+def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    repo_root = locate_repo_root(args.hymet_root)
+    args.repo_root = repo_root
+    args.bench_root = repo_root / "bench"
+    args.case_root = repo_root / "case"
     try:
         args.func(args)
     except subprocess.CalledProcessError as exc:
