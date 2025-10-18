@@ -64,21 +64,66 @@ fi
 RAW_PROFILE="${OUT_DIR}/metaphlan_profile.tsv"
 PROFILE_CAMI="${OUT_DIR}/profile.cami.tsv"
 IFS=' ' read -r -a EXTRA_ARGS <<< "${EXTRA_OPTS:-}"
+if [[ ${#EXTRA_ARGS[@]} -eq 0 || -z "${EXTRA_ARGS[0]:-}" ]]; then
+  EXTRA_ARGS=()
+fi
+if [[ ${#EXTRA_ARGS[@]} -eq 0 ]]; then
+  EXTRA_ARGS=(--split_reads)
+fi
+
+run_metaphlan_once(){
+  local nproc="$1"; shift
+  local label="$1"; shift
+  local -a extra=("$@")
+  local -a cmd=(
+    "${METAPHLAN_CMD}"
+    "${CONTIGS_ABS}"
+    "--input_type" "fasta"
+    "--nproc" "${nproc}"
+    "--db_dir" "${DB_DIR}"
+    "-x" "${INDEX_NAME}"
+  )
+  if [[ ${#extra[@]} -gt 0 ]]; then
+    cmd+=("${extra[@]}")
+  fi
+  cmd+=("-o" "${RAW_PROFILE}")
+  local extra_pretty="${extra[*]:-∅}"
+  log "MetaPhlAn4 ${label} run: threads=${nproc}, extra_opts=${extra_pretty}"
+  "${cmd[@]}"
+}
 
 log "Running MetaPhlAn4 for ${SAMPLE}"
-CMD=(
-  "${METAPHLAN_CMD}"
-  "${CONTIGS_ABS}"
-  "--input_type" "fasta"
-  "--nproc" "${THREADS}"
-  "--db_dir" "${DB_DIR}"
-  "-x" "${INDEX_NAME}"
-)
-if [[ ${#EXTRA_ARGS[@]} -gt 0 && -n "${EXTRA_ARGS[0]}" ]]; then
-  CMD+=("${EXTRA_ARGS[@]}")
+PRIMARY_THREADS="${THREADS}"
+PRIMARY_EXTRA=("${EXTRA_ARGS[@]}")
+USED_THREADS="${PRIMARY_THREADS}"
+USED_EXTRA_ARGS=("${PRIMARY_EXTRA[@]}")
+
+if ! run_metaphlan_once "${PRIMARY_THREADS}" "primary" "${PRIMARY_EXTRA[@]}"; then
+  rm -f "${RAW_PROFILE}"
+  FALLBACK_THREADS="${PRIMARY_THREADS}"
+  if [[ "${FALLBACK_THREADS}" -gt 4 ]]; then
+    FALLBACK_THREADS=4
+  fi
+  if [[ "${FALLBACK_THREADS}" -lt 1 ]]; then
+    FALLBACK_THREADS=1
+  fi
+  FALLBACK_EXTRA=("${PRIMARY_EXTRA[@]}")
+  if [[ " ${FALLBACK_EXTRA[*]} " != *" --split_reads "* ]]; then
+    FALLBACK_EXTRA+=(--split_reads)
+  fi
+  primary_str="${PRIMARY_EXTRA[*]}"
+  fallback_str="${FALLBACK_EXTRA[*]}"
+  if [[ "${FALLBACK_THREADS}" -eq "${PRIMARY_THREADS}" && "${fallback_str}" == "${primary_str}" ]]; then
+    die "MetaPhlAn failed. Try setting METAPHLAN_OPTS=\"--split_reads\" and reducing METAPHLAN_THREADS."
+  fi
+  log "MetaPhlAn primary run failed; retrying with threads=${FALLBACK_THREADS}, extra_opts=${fallback_str}"
+  if ! run_metaphlan_once "${FALLBACK_THREADS}" "fallback" "${FALLBACK_EXTRA[@]}"; then
+    die "MetaPhlAn failed after fallback attempt"
+  fi
+  USED_THREADS="${FALLBACK_THREADS}"
+  USED_EXTRA_ARGS=("${FALLBACK_EXTRA[@]}")
 fi
-CMD+=("-o" "${RAW_PROFILE}")
-"${CMD[@]}"
+USED_EXTRA_OPTS="${USED_EXTRA_ARGS[*]}"
 
 python3 "${SCRIPT_DIR}/convert/metaphlan4_to_cami.py" \
   --input "${RAW_PROFILE}" \
@@ -88,5 +133,5 @@ python3 "${SCRIPT_DIR}/convert/metaphlan4_to_cami.py" \
   --taxdb "${TAXDIR}"
 
 cat > "${OUT_DIR}/metadata.json" <<EOF
-{"sample_id": "${SAMPLE}", "tool": "metaphlan4", "profile": "${PROFILE_CAMI}", "raw_profile": "${RAW_PROFILE}", "metaphlan_cmd": "${METAPHLAN_CMD}", "extra_opts": "${EXTRA_OPTS}", "db_dir": "${DB_DIR}", "index": "${INDEX_NAME}"}
+{"sample_id": "${SAMPLE}", "tool": "metaphlan4", "profile": "${PROFILE_CAMI}", "raw_profile": "${RAW_PROFILE}", "metaphlan_cmd": "${METAPHLAN_CMD}", "extra_opts": "${USED_EXTRA_OPTS}", "threads": "${USED_THREADS}", "db_dir": "${DB_DIR}", "index": "${INDEX_NAME}"}
 EOF

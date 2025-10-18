@@ -31,6 +31,7 @@ done
 [[ -n "${SAMPLE}" && -n "${CONTIGS}" ]] || usage
 
 OUT_DIR="${OUT_DIR:-${BENCH_ROOT}/out/${SAMPLE}/hymet}"
+OUT_DIR="$(resolve_path "${OUT_DIR}")"
 ensure_dir "${OUT_DIR}"
 RUN_DIR="${OUT_DIR}/run"
 ensure_dir "${RUN_DIR}"
@@ -40,16 +41,30 @@ if [[ ! -s "${CONTIGS_ABS}" ]]; then
   die "Input contigs FASTA missing (${CONTIGS_ABS})"
 fi
 
+CACHE_ROOT_EFFECTIVE="${CACHE_ROOT:-${HYMET_ROOT}/data/downloaded_genomes/cache_bench}"
+CAND_MAX_EFFECTIVE="${CAND_MAX:-1500}"
+SPECIES_DEDUP_EFFECTIVE="${SPECIES_DEDUP:-1}"
+ASSEMBLY_SUMMARY_DIR_EFFECTIVE="${ASSEMBLY_SUMMARY_DIR:-${HYMET_ROOT}/data/downloaded_genomes/assembly_summaries}"
+ensure_dir "${OUT_DIR}/logs"
+CAND_LIMIT_LOG_PATH="${OUT_DIR}/logs/candidate_limit.log"
+
 log "Running HYMET classifier for ${SAMPLE}"
 INPUT_FASTA="${CONTIGS_ABS}" \
 OUTDIR="${RUN_DIR}" \
 THREADS="${THREADS}" \
 ROOT="${HYMET_ROOT}" \
+CACHE_ROOT="${CACHE_ROOT_EFFECTIVE}" \
+CAND_MAX="${CAND_MAX_EFFECTIVE}" \
+SPECIES_DEDUP="${SPECIES_DEDUP_EFFECTIVE}" \
+ASSEMBLY_SUMMARY_DIR="${ASSEMBLY_SUMMARY_DIR_EFFECTIVE}" \
+CAND_LIMIT_LOG="${CAND_LIMIT_LOG_PATH}" \
 bash "${HYMET_ROOT}/run_hymet_cami.sh"
 
 PROFILE_SRC="${RUN_DIR}/hymet.sample_0.cami.tsv"
 CLASSIFIED_SRC="${RUN_DIR}/classified_sequences.tsv"
 PAF_SRC="${RUN_DIR}/work/resultados.paf"
+log "[debug] contents of ${RUN_DIR}:"
+ls -l "${RUN_DIR}" || true
 
 PROFILE_DST="${OUT_DIR}/profile.cami.tsv"
 CLASSIFIED_DST="${OUT_DIR}/classified_sequences.tsv"

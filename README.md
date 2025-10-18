@@ -6,6 +6,13 @@
 [![License](https://anaconda.org/bioconda/hymet/badges/license.svg)](https://anaconda.org/bioconda/hymet)
 [![Latest Release Date](https://anaconda.org/bioconda/hymet/badges/latest_release_date.svg)](https://anaconda.org/bioconda/hymet)
 
+
+## Benchmark & Case Study Resources
+
+- **CAMI Benchmark Harness** (`bench/`): one-command execution across CAMI datasets with unified database builders, evaluation, plots, and runtime tracking. See `bench/README.md` for details.
+- **Real-data Case Study & Ablation** (`case/`): run HYMET on public contig datasets, perform reference ablations, and capture fallback metrics. See `case/README.md`.
+- **Manuscript Hooks** (`docs/manuscript_hooks.md`): pointers to tables, plots, and methods text derived from the benchmark and case-study outputs.
+
 ## Installation and Configuration
 
 Follow the steps below to install and configure **HYMET**

@@ -1,0 +1,14 @@
+# Generated runtime artifacts
+bench/out/
+case/out/
+case/out_*/
+case/ablation/
+cache/
+data/
+debug/
+input/
+output/
+taxonomy_files/
+tools/__pycache__/
+*.pyc
+*.pyo

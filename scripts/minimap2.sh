@@ -7,13 +7,15 @@ NT_MMI="$3"             # Path to the minimap2 index (reference.mmi).
 RESULTADOS_PAF="$4"     # Path to the alignment results (resultados.paf).
 
 # Create the reference set index
-echo "Creating index with minimap2..."
-minimap2 -I2g -d "$NT_MMI" "$REFERENCE_SET" # General index
-
-# Check if the index creation was successful
-if [ $? -ne 0 ]; then
-    echo "Error creating index with minimap2."
-    exit 1
+if [ ! -s "$NT_MMI" ]; then
+    echo "Creating index with minimap2..."
+    minimap2 -I2g -d "$NT_MMI" "$REFERENCE_SET" # General index
+    if [ $? -ne 0 ]; then
+        echo "Error creating index with minimap2."
+        exit 1
+    fi
+else
+    echo "Using cached minimap2 index: $NT_MMI"
 fi
 
 # Run alignment using minimap2 (for long reads)
