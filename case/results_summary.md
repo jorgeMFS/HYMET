@@ -37,8 +37,8 @@ FORCE_DOWNLOAD=1 CACHE_ROOT=data/downloaded_genomes/cache_case THREADS=8 ./run_c
 Replicate command (uses shared cache):
 
 ```bash
-cd HYMET/case
-THREADS=8 CACHE_ROOT=data/downloaded_genomes/cache_case ./run_case.sh --manifest manifest_zymo.tsv
+cd HYMET
+bin/hymet case --manifest case/manifest_zymo.tsv --threads 8 --cache-root case/data/downloaded_genomes/cache_case
 ```
 
 Evaluation with synthesized truth (generated from the multi-strain panel):
@@ -71,8 +71,8 @@ Contig accuracy (893 contigs total):
 Command (same as above; no truth available):
 
 ```bash
-cd HYMET/case
-THREADS=8 CACHE_ROOT=data/downloaded_genomes/cache_case ./run_case.sh --manifest manifest_gut.tsv
+cd HYMET
+bin/hymet case --manifest case/manifest_gut.tsv --threads 8 --cache-root case/data/downloaded_genomes/cache_case
 ```
 
 Outputs:
@@ -101,14 +101,14 @@ Current run (with default 5 000-genome reference) produced no removals; the ta
 
 2. **Run ablation on the curated FASTA**  
    ```bash
-   cd HYMET/case
-   THREADS=4 ./run_ablation.sh \
-     --sample zymo_mc \
-     --taxa 1423,562,28901,1639,1280,1351,287,1613,4932,5207 \
-     --levels 0,0.5,1.0 \
-     --fasta truth/zymo_refs/zymo_refs.fna \
-     --seqmap truth/zymo_refs/seqid2taxid.tsv \
-     --threads 4
+  cd HYMET
+  bin/hymet ablation \
+    --sample zymo_mc \
+    --taxa 1423,562,28901,1639,1280,1351,287,1613,4932,5207 \
+    --levels 0,0.5,1.0 \
+    --fasta case/truth/zymo_refs/zymo_refs.fna \
+    --seqmap case/truth/zymo_refs/seqid2taxid.tsv \
+    --threads 4
    ```
 
    Outputs after the curated-panel run:

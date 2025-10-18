@@ -13,7 +13,15 @@ This file tracks the current status of the CAMI benchmark harness and how to rep
 - Candidate selection: harness defaults to species-level deduplication with `CAND_MAX=1500` (override with `SPECIES_DEDUP=0` or a different `CAND_MAX`).
 - Cache hygiene: run `python bench/tools/prune_cache.py --max-age-days 30 --max-size-gb 150` to trim stale `data/downloaded_genomes/cache_bench` entries.
 
-`run_hymet_cami.sh` hashes the Mash-selected accession list and stores downloads in `data/downloaded_genomes/cache/<sha1>/`, so subsequent runs reuse the same minimap index and FASTA.
+`run_hymet_cami.sh` hashes the Mash-selected accession list and stores downloads in `data/downloaded_genomes/cache/<sha1>/`, so subsequent runs reuse the same minimap index and FASTA. For day-to-day usage, invoke the unified CLI instead of the raw scripts:
+
+```bash
+# single run
+bin/hymet run --contigs /path/to/contigs.fna --out /path/to/output --threads 16
+
+# CAMI benchmark
+bin/hymet bench --manifest bench/cami_manifest.tsv --tools hymet,kraken2,centrifuge
+```
 
 ---
 
