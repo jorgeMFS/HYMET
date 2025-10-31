@@ -117,7 +117,7 @@ For throughput runs, iterate over samples in a simple shell loop or a workflow m
    ```
    Place NCBI taxonomy dumps under `HYMET/taxonomy_files/`. Builders in `bench/db/` derive tool-specific indices on demand.
 2. **CAMI subsets** – Use `bench/fetch_cami.sh` (supports `--dry-run`) to download the contigs listed in `bench/cami_manifest.tsv`.
-3. **Case-study contigs** – `case/fetch_case_data.sh` retrieves the MGnify gut assembly and Zymo mock community.
+3. **Case-study contigs** – `case/fetch_case_data.sh` downloads the Zymo mock community assembly (`http://nanopore.s3.climb.ac.uk/mockcommunity/v3/7cd60d3b-eafb-48d1-9aab-c8701232f2f8.ctg.cns.fa`) and the MGnify gut contigs (`https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00794604/file/ERZ24911249_FASTA.fasta.gz`) and stages them under `/data/case/`.
 4. **Truth tables** – CAMI truth lives under `bench/data/`; case-study truth files (including curated Zymo panels) live under `case/truth/`.
 
 ## Outputs at a Glance

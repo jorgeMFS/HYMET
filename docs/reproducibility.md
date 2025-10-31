@@ -145,6 +145,11 @@ cd ..
 ```
 
 Verify `case/data/gut_case_contigs.fna` and `case/data/zymo_mc_contigs.fna` exist (or the directory you passed via `--dest`), plus truth sets under `case/truth/`.
+The helper downloads the Zymo mock community assembly from
+`http://nanopore.s3.climb.ac.uk/mockcommunity/v3/7cd60d3b-eafb-48d1-9aab-c8701232f2f8.ctg.cns.fa`
+and the MGnify gut contigs from
+`https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00794604/file/ERZ24911249_FASTA.fasta.gz`
+before converting/renaming them into the expected layout.
 
 ---
 
