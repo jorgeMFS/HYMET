@@ -31,8 +31,8 @@ case/
 
    ```bash
    cd HYMET/case
-   ./fetch_case_data.sh              # downloads both samples to case/
-   ./fetch_case_data.sh zymo_mc      # download only the mock community
+   ./fetch_case_data.sh              # downloads both samples to /data/case (default path)
+   ./fetch_case_data.sh --dest case/data zymo_mc   # stage inside the repo instead
    ./fetch_case_data.sh --dest /tmp/case gut_case
    ```
 
