@@ -1,5 +1,5 @@
 sample_id	contigs_fa	truth_contigs_tsv	truth_profile_tsv	contigs_url	truth_contigs_url	truth_profile_url
-cami_sample_0	/data/cami/sample_0.fna	/data/cami/sample_0/2017.12.29_11.37.26_sample_0/contigs/gsa_mapping_new.tsv	/data/cami/sample_0/taxonomic_profile_0.txt			
+cami_sample_0	/data/cami/sample_0.fna	/data/cami/sample_0/2017.12.29_11.37.26_sample_0/contigs/gsa_mapping_new.tsv	/data/cami/sample_0/taxonomic_profile_0.txt	https://frl.publisso.de/data/frl:6421672/dataset/2017.12.29_11.37.26_sample_0_contigs.tar#2017.12.29_11.37.26_sample_0/contigs/anonymous_gsa.fasta.gz	https://frl.publisso.de/data/frl:6421672/dataset/2017.12.29_11.37.26_sample_0_contigs.tar#2017.12.29_11.37.26_sample_0/contigs/gsa_mapping_new.tsv.gz	https://frl.publisso.de/data/frl:6421672/dataset/2017.12.29_11.37.26_sample_0_contigs.tar#taxonomic_profile_0.txt
 cami_i_lc	data/cami_i_lc/contigs.fna	data/cami_i_lc/truth_contigs.tsv	data/cami_i_lc/truth_profile.tsv			
 cami_i_mc	data/cami_i_mc/contigs.fna	data/cami_i_mc/truth_contigs.tsv	data/cami_i_mc/truth_profile.tsv			
 cami_i_hc	data/cami_i_hc/contigs.fna	data/cami_i_hc/truth_contigs.tsv	data/cami_i_hc/truth_profile.tsv			

@@ -76,6 +76,14 @@ Columns:
 
 Relative paths are resolved against `bench/`; absolute paths (e.g., `bench/data/cami/...`) are allowed.
 
+`bench/fetch_cami.sh` understands archive-member URLs of the form
+`https://…/contigs.tar#path/inside/archive`. The default manifest uses this
+syntax to pull the official CAMI I sample\_0 bundle from the Publisso mirror,
+extracts the required members (contigs, mapping, profile) into `/data/cami/`,
+and then re-generates the derived subsets (`cami_i_lc`, `cami_i_mc`, …) by
+invoking `tools/generate_cami_subsets.py`. The script caches the downloaded
+archive under `bench/tmp_downloads/` so repeated runs do not hit the network.
+
 ### 3.2 Lightweight CAMI subsets
 
 `bench/data/` stores derived samples (e.g., `cami_i_lc`). Regenerate with:

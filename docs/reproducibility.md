@@ -125,6 +125,13 @@ cd bench
 cd ..
 ```
 
+The helper downloads the official CAMI I sample\_0 archive from the Publisso
+mirror, extracts the required members into `/data/cami/`, and then generates
+the lightweight subsets (`cami_i_lc`, `cami_i_mc`, `cami_i_hc`,
+`cami_ii_mousegut`, `cami_ii_marine`, `cami_ii_strainmadness`) under
+`bench/data/`. The archive is cached in `bench/tmp_downloads/` so subsequent
+runs are offline.
+
 Outputs appear under `bench/data/<sample>/`. Confirm that each folder contains:
 - `contigs.fna`
 - `truth/` tables (`contigs.tsv`, `profile.tsv`)
@@ -133,11 +140,11 @@ Outputs appear under `bench/data/<sample>/`. Confirm that each folder contains:
 
 ```bash
 cd case
-./fetch_case_data.sh --dest data case/manifest.tsv
+./fetch_case_data.sh --dest data
 cd ..
 ```
 
-Verify `/data/case/gut_case_contigs.fna` and `/data/case/zymo_mc_contigs.fna` exist, plus truth sets under `case/truth/`.
+Verify `case/data/gut_case_contigs.fna` and `case/data/zymo_mc_contigs.fna` exist (or the directory you passed via `--dest`), plus truth sets under `case/truth/`.
 
 ---
 
@@ -177,16 +184,17 @@ THREADS=16 CACHE_ROOT=$(pwd)/bench/data/downloaded_genomes/cache_bench \
 workflows/run_cami_suite.sh \
   --scenario cami \
   --suite canonical \
-  --modes contigs \
-  --contig-tools hymet,kraken2,centrifuge,ganon2,viwrap,tama,squeezemeta,megapath_nano
+  --modes contigs
 ```
 
 The runner sets `BENCH_OUT_ROOT` per mode, stages every tool under `results/cami/canonical/run_<timestamp>/raw/<mode>/<sample>/<tool>/`, and copies the derived TSVs/figures into `tables/` and `figures/`. No manual `cp` steps are required.
 
+The contig tool roster defaults to the panel defined in `workflows/config/cami_suite.cfg`; supply `--contig-tools` if you need to deviate for exploratory runs.
+
 If you invoke the low-level harness directly (`bin/hymet bench` or `bench/run_all_cami.sh`), publish the results afterwards so they follow the same hierarchy:
 
 ```bash
-bench/run_all_cami.sh --manifest bench/cami_manifest.tsv --tools hymet,kraken2,centrifuge,ganon2,viwrap,tama,squeezemeta,megapath_nano
+bench/run_all_cami.sh --manifest bench/cami_manifest.tsv --tools contigs
 bench/publish_results.sh --scenario cami --suite canonical
 ```
 
