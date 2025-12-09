@@ -105,6 +105,8 @@ bin/hymet run \
 
 For throughput runs, iterate over samples in a simple shell loop or a workflow manager, changing only `--contigs/--reads` and `--out` per sample; the cache key (hash of `selected_genomes.txt`) lets multiple runs share downloaded references automatically.
 
+> **Cache note:** HYMET uses a two-level cache: per-sample genome FASTAs under `CACHE_ROOT/<sha1>/` and shared NCBI assembly summaries (~1.6 GB) under `ASSEMBLY_SUMMARY_DIR`. Summaries are refreshed every 14 days and reused across all runs to avoid redundant downloads.
+
 ### Reproducing CAMI suites
 
 - Follow the detailed playbook in `docs/reproducibility.md` for the original manuscript run. The published artefacts now live under `results/cami/canonical/run_<timestamp>/` (raw outputs, tables, figures, metadata).

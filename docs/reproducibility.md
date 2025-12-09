@@ -193,7 +193,11 @@ export CACHE_ROOT="$(pwd)/bench/data/downloaded_genomes/cache_bench"
 mkdir -p "$CACHE_ROOT"
 ```
 
-> Each HYMET run hashes selected references and stores them in `$CACHE_ROOT/<sha1>/`. Keep this directory for re-runs.
+> **Cache architecture.** HYMET uses a two-level cache to minimize redundant downloads:
+> - **Per-sample genome cache:** `$CACHE_ROOT/<sha1>/` stores downloaded genome FASTAs, combined reference, and minimap2 index. The hash is derived from `selected_genomes.txt`.
+> - **Shared assembly summaries:** `$ASSEMBLY_SUMMARY_DIR` (defaults to `$CACHE_ROOT/../assembly_summaries/`) stores the NCBI assembly summary files (~1.4 GB RefSeq + ~200 MB GenBank). These are shared across all cache keys to avoid ~1.6 GB duplication per run. Summaries are refreshed every 14 days.
+>
+> Keep `$CACHE_ROOT` intact for re-runs; the shared summaries directory is automatically populated on first use.
 
 ### 8.2 Execute benchmark (canonical release)
 
@@ -423,6 +427,7 @@ Upload the bundles to Zenodo (or GigaDB) and reference them in the manuscript’
 | `Permission denied` writing to cache | CACHE_ROOT on read-only volume | Point `CACHE_ROOT` to a writable directory. |
 | CAMITAX/Nextflow failures | Missing Nextflow/java | Install Nextflow, ensure alternative tools still execute; remove `camitax` from `--tools` if not required. |
 | Excessive disk usage | Large `.mmi` indices in cache | Periodically prune with `python bench/tools/prune_cache.py --max-age-days 30 --max-size-gb 150`. |
+| Duplicate assembly summaries across cache dirs | Old HYMET version | Upgrade to latest; `downloadDB.py` now shares assembly summaries via `ASSEMBLY_SUMMARY_DIR`. Remove any `<cache-key>/download_cache/assembly_summary_*.txt` files (safe to delete). |
 
 ---
 
