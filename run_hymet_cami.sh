@@ -71,10 +71,31 @@ case "$INPUT_MODE" in
     die "Unsupported INPUT_MODE '$INPUT_MODE' (expected 'contigs' or 'reads')"
     ;;
 esac
-for f in data/sketch1.msh data/sketch2.msh data/sketch3.msh data/detailed_taxonomy.tsv data/taxonomy_hierarchy.tsv \
-         scripts/mash.sh scripts/minimap2.sh scripts/classification_cami.py; do
-  [ -s "$f" ] || die "missing $f"
-done
+# Check required files with actionable error messages
+check_file_with_hint(){
+  local f="$1"
+  local hint="$2"
+  if [ ! -s "$f" ]; then
+    log "ERROR: missing required file: $f"
+    log "FIX: $hint"
+    exit 1
+  fi
+}
+
+check_file_with_hint "data/sketch1.msh" "Run: tools/fetch_sketches.sh"
+check_file_with_hint "data/sketch2.msh" "Run: tools/fetch_sketches.sh"
+check_file_with_hint "data/sketch3.msh" "Run: tools/fetch_sketches.sh"
+check_file_with_hint "data/taxonomy_hierarchy.tsv" "See docs/reproducibility.md section 5 for taxonomy setup"
+check_file_with_hint "scripts/mash.sh" "Repository may be incomplete - re-clone or check git status"
+check_file_with_hint "scripts/minimap2.sh" "Repository may be incomplete - re-clone or check git status"
+check_file_with_hint "scripts/classification_cami.py" "Repository may be incomplete - re-clone or check git status"
+
+# detailed_taxonomy.tsv: create stub if missing (gets populated by downloadDB.py during run)
+if [ ! -s "data/detailed_taxonomy.tsv" ]; then
+  log "Creating stub data/detailed_taxonomy.tsv (will be populated during Mash → Download phase)"
+  mkdir -p data
+  printf "GCF\tTaxID\tIdentifiers\n" > data/detailed_taxonomy.tsv
+fi
 [ -d taxonomy_files ] || { log "taxonomy_files missing → running ./config.pl"; ./config.pl; }
 
 # Check for required external tools

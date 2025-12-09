@@ -35,6 +35,27 @@ HYMET performs contig-level metagenomic classification by combining Mash-based c
 | `testdataset/` | Utilities to assemble small synthetic evaluation sets. |
 | `data/`, `taxonomy_files/` | Expected locations for downloaded references and taxonomy dumps. |
 
+## Quick Start (First-Time Setup)
+
+After cloning the repository and creating your conda environment, run the initialization command to set up required files:
+
+```bash
+# 1. Create and activate environment
+mamba env create -f environment.yml
+conda activate hymet_env
+
+# 2. Initialize HYMET (creates stub files, verifies installation)
+bin/hymet init
+
+# 3. Fetch Mash sketches from Zenodo (required for classification)
+tools/fetch_sketches.sh
+
+# 4. Run init again to verify everything is ready
+bin/hymet init
+```
+
+The `init` command creates required stub files (like `data/detailed_taxonomy.tsv`) and verifies your installation. If any files are missing, it provides specific instructions on how to obtain them.
+
 ## Quick Start Commands
 
 ```bash

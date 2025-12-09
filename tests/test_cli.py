@@ -112,6 +112,28 @@ def test_legacy_dry_run():
     )
 
 
+def test_init_creates_stub_files(tmp_path):
+    """Test that hymet init creates stub detailed_taxonomy.tsv."""
+    # Create a minimal HYMET-like structure in tmp_path
+    (tmp_path / "bench").mkdir()
+    (tmp_path / "bench" / "run_all_cami.sh").touch()
+    (tmp_path / "case").mkdir()
+    (tmp_path / "case" / "run_case.sh").touch()
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tools").mkdir()
+    (tmp_path / "data").mkdir()
+
+    # Run init with --quiet to avoid exit on missing sketches
+    cmd = [str(CLI), "--hymet-root", str(tmp_path), "init", "--quiet"]
+    subprocess.run(cmd, check=True, cwd=ROOT)
+
+    # Check that stub file was created
+    detailed_tax = tmp_path / "data" / "detailed_taxonomy.tsv"
+    assert detailed_tax.exists(), "detailed_taxonomy.tsv should be created"
+    content = detailed_tax.read_text(encoding="utf-8")
+    assert content.startswith("GCF\tTaxID\tIdentifiers"), "Should have correct header"
+
+
 def test_simulate_mutations_deterministic(tmp_path):
     input_fasta = ROOT / "tests" / "data" / "mutation_input.fna"
     expected_fasta = ROOT / "tests" / "data" / "mutation_expected.fna"

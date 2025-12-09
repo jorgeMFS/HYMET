@@ -86,6 +86,21 @@ done
 
 Capture the Python version and any warnings in your notes.
 
+### 4.3 Initialize HYMET
+
+Run the init command to create required stub files and verify your installation:
+
+```bash
+bin/hymet init
+```
+
+This command:
+- Creates `data/detailed_taxonomy.tsv` with the required header (this file is populated during classification runs)
+- Verifies that all required scripts exist
+- Reports any missing files with specific instructions to obtain them
+
+If you see issues, resolve them and run `bin/hymet init` again until all checks pass.
+
 ---
 
 ## 5. Reference assets
