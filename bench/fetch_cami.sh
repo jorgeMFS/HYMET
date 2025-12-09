@@ -117,10 +117,14 @@ generate_derived_samples(){
     DERIVED_GENERATED=1
     return 0
   fi
-  local script_path="${SCRIPT_DIR%/*}/tools/generate_cami_subsets.py"
+  local repo_root="${SCRIPT_DIR%/*}"
+  local script_path="${repo_root}/tools/generate_cami_subsets.py"
+  local taxonomy_dir="${repo_root}/taxonomy_files"
   python3 "${script_path}" \
     --fasta "${SAMPLE0_FNA}" \
     --mapping "${SAMPLE0_MAPPING}" \
+    --nodes "${taxonomy_dir}/nodes.dmp" \
+    --names "${taxonomy_dir}/names.dmp" \
     --outdir "${MANIFEST_DIR}/data" || die "generate_cami_subsets.py failed"
   DERIVED_GENERATED=1
 }

@@ -260,12 +260,38 @@ def command_init(args) -> None:
     data_dir = repo_root / "data"
     taxonomy_dir = repo_root / "taxonomy_files"
 
+    # Ensure data directory exists
+    data_dir.mkdir(parents=True, exist_ok=True)
+
+    # Auto-setup taxonomy if missing (unless --skip-taxonomy)
+    hierarchy = data_dir / "taxonomy_hierarchy.tsv"
+    needs_taxonomy = (
+        not taxonomy_dir.is_dir() or
+        not (taxonomy_dir / "nodes.dmp").exists() or
+        not hierarchy.exists() or
+        (hierarchy.exists() and hierarchy.stat().st_size == 0)
+    )
+
+    if needs_taxonomy and not getattr(args, "skip_taxonomy", False) and not args.quiet:
+        config_pl = repo_root / "config.pl"
+        if config_pl.exists():
+            print("[hymet init] Taxonomy files missing. Setting up from NCBI...")
+            print("  (this downloads ~60MB and generates the hierarchy file)")
+            print(flush=True)
+            try:
+                subprocess.run(["perl", str(config_pl)], cwd=repo_root, check=True)
+                print()
+            except subprocess.CalledProcessError as e:
+                print(f"[hymet init] Warning: config.pl failed (exit {e.returncode})")
+                print("  You can retry with: ./config.pl")
+                print()
+            except FileNotFoundError:
+                print("[hymet init] Warning: perl not found. Install perl or run ./config.pl manually.")
+                print()
+
     issues = []
     created = []
     verified = []
-
-    # Ensure data directory exists
-    data_dir.mkdir(parents=True, exist_ok=True)
 
     # Create stub detailed_taxonomy.tsv if missing
     # This file gets overwritten during runtime by downloadDB.py with actual taxonomy data
@@ -293,12 +319,11 @@ def command_init(args) -> None:
         else:
             issues.append(f"data/{sketch} missing - run: tools/fetch_sketches.sh")
 
-    # Check taxonomy_hierarchy.tsv
-    hierarchy = data_dir / "taxonomy_hierarchy.tsv"
+    # Check taxonomy_hierarchy.tsv (re-check after potential auto-setup)
     if hierarchy.exists() and hierarchy.stat().st_size > 0:
         verified.append("data/taxonomy_hierarchy.tsv")
     else:
-        issues.append("data/taxonomy_hierarchy.tsv missing - see docs/reproducibility.md")
+        issues.append("data/taxonomy_hierarchy.tsv missing - run: ./config.pl")
 
     # Check taxonomy_files directory
     if taxonomy_dir.is_dir():
@@ -307,9 +332,9 @@ def command_init(args) -> None:
         if nodes.exists() and names.exists():
             verified.append("taxonomy_files/ (nodes.dmp, names.dmp)")
         else:
-            issues.append("taxonomy_files/ incomplete - needs nodes.dmp and names.dmp from NCBI")
+            issues.append("taxonomy_files/ incomplete - run: ./config.pl")
     else:
-        issues.append("taxonomy_files/ missing - download NCBI taxdump")
+        issues.append("taxonomy_files/ missing - run: ./config.pl")
 
     # Check required scripts
     scripts = [
@@ -368,6 +393,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     init_parser = subparsers.add_parser("init", help="Initialize HYMET: create stub files and verify installation")
     init_parser.add_argument("--quiet", "-q", action="store_true", help="Don't exit with error on missing files")
+    init_parser.add_argument("--skip-taxonomy", action="store_true", help="Skip automatic NCBI taxonomy download")
     init_parser.set_defaults(func=command_init)
 
     run_parser = subparsers.add_parser("run", help="Run HYMET on a single sample")

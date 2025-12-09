@@ -85,7 +85,7 @@ check_file_with_hint(){
 check_file_with_hint "data/sketch1.msh" "Run: tools/fetch_sketches.sh"
 check_file_with_hint "data/sketch2.msh" "Run: tools/fetch_sketches.sh"
 check_file_with_hint "data/sketch3.msh" "Run: tools/fetch_sketches.sh"
-check_file_with_hint "data/taxonomy_hierarchy.tsv" "See docs/reproducibility.md section 5 for taxonomy setup"
+check_file_with_hint "data/taxonomy_hierarchy.tsv" "Run: bin/hymet init (or ./config.pl)"
 check_file_with_hint "scripts/mash.sh" "Repository may be incomplete - re-clone or check git status"
 check_file_with_hint "scripts/minimap2.sh" "Repository may be incomplete - re-clone or check git status"
 check_file_with_hint "scripts/classification_cami.py" "Repository may be incomplete - re-clone or check git status"
