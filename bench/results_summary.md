@@ -149,11 +149,11 @@ Tables (CSV/TSV):
 This configuration used the following HYMET parameters (see `results/cami/contig_full/run_<timestamp>/metadata.json`):
 
 ```
-CAND_MAX=200 SPECIES_DEDUP=1 HYMET_REL_COV_THRESHOLD=0.2 HYMET_ABS_COV_THRESHOLD=0.02 \
+CAND_MAX=1500 SPECIES_DEDUP=1 HYMET_REL_COV_THRESHOLD=0.2 HYMET_ABS_COV_THRESHOLD=0.02 \
 HYMET_TAXID_MIN_SUPPORT=1 HYMET_TAXID_MIN_WEIGHT=0
 ```
 
-Candidate logs (`results/<scenario>/<suite>/run_<timestamp>/raw/contigs/<sample>/hymet/logs/candidate_limit.log`) confirm the pruning: `cami_sample_0` keeps 200 of 37,556 Mash hits, while smaller panels such as `cami_i_lc` retain their full 147 deduplicated candidates. Run metadata and resource usage live in the published `tables/<mode>/runtime_memory.tsv`.
+Candidate logs (`results/<scenario>/<suite>/run_<timestamp>/raw/contigs/<sample>/hymet/logs/candidate_limit.log`) confirm the pruning: `cami_sample_0` retains 1,500 of ~37,500 Mash hits after species deduplication, while smaller panels such as `cami_i_lc` keep all 147 candidates. Run metadata and resource usage live in the published `tables/<mode>/runtime_memory.tsv`.
 
 ### Figure interpretations
 See the discussion sections following each figure above.

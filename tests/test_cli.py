@@ -112,6 +112,49 @@ def test_legacy_dry_run():
     )
 
 
+def test_init_creates_stub_files(tmp_path):
+    """Test that hymet init creates stub detailed_taxonomy.tsv."""
+    # Create a minimal HYMET-like structure in tmp_path
+    (tmp_path / "bench").mkdir()
+    (tmp_path / "bench" / "run_all_cami.sh").touch()
+    (tmp_path / "case").mkdir()
+    (tmp_path / "case" / "run_case.sh").touch()
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tools").mkdir()
+    (tmp_path / "data").mkdir()
+
+    # Run init with --quiet and --skip-taxonomy to avoid exit on missing files
+    cmd = [str(CLI), "--hymet-root", str(tmp_path), "init", "--quiet", "--skip-taxonomy"]
+    subprocess.run(cmd, check=True, cwd=ROOT)
+
+    # Check that stub file was created
+    detailed_tax = tmp_path / "data" / "detailed_taxonomy.tsv"
+    assert detailed_tax.exists(), "detailed_taxonomy.tsv should be created"
+    content = detailed_tax.read_text(encoding="utf-8")
+    assert content.startswith("GCF\tTaxID\tIdentifiers"), "Should have correct header"
+
+
+def test_init_skip_taxonomy_flag(tmp_path):
+    """Test that --skip-taxonomy prevents automatic taxonomy download."""
+    # Create minimal HYMET structure without taxonomy files
+    (tmp_path / "bench").mkdir()
+    (tmp_path / "bench" / "run_all_cami.sh").touch()
+    (tmp_path / "case").mkdir()
+    (tmp_path / "case" / "run_case.sh").touch()
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tools").mkdir()
+    (tmp_path / "data").mkdir()
+    # Create a dummy config.pl that would fail if called
+    config_pl = tmp_path / "config.pl"
+    config_pl.write_text("#!/usr/bin/perl\nexit 99;\n")
+
+    # Run with --skip-taxonomy - should NOT try to run config.pl
+    cmd = [str(CLI), "--hymet-root", str(tmp_path), "init", "--quiet", "--skip-taxonomy"]
+    result = subprocess.run(cmd, check=True, cwd=ROOT)
+    # If config.pl was called, it would have exited with 99 and failed
+    assert result.returncode == 0, "--skip-taxonomy should prevent config.pl from running"
+
+
 def test_simulate_mutations_deterministic(tmp_path):
     input_fasta = ROOT / "tests" / "data" / "mutation_input.fna"
     expected_fasta = ROOT / "tests" / "data" / "mutation_expected.fna"

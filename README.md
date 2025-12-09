@@ -10,8 +10,8 @@ HYMET performs contig-level metagenomic classification by combining Mash-based c
 
 ## Feature Snapshot
 
-- **Candidate filtering** – Mash containment scores cap the number of references passed to minimap2 (200 by default).
-- **CLI workflows** – `bin/hymet` provides `run`, `bench`, `case`, `ablation`, `truth build-zymo`, and `legacy` subcommands with consistent metadata outputs.
+- **Candidate filtering** – Mash containment scores cap the number of references passed to minimap2 (5000 by default; the CAMI harness overrides this to 1500).
+- **CLI workflows** – `bin/hymet` provides `run`, `bench`, `case`, `ablation`, `truth build-zymo`, `artifacts`, `version`, and `legacy` subcommands with consistent metadata outputs.
 - **Benchmark automation** – The CAMI harness produces evaluation tables, runtime logs, and figures from a single driver script.
 - **Case-study tooling** – Dedicated scripts execute MGnify and Zymo contig workflows and perform reference ablation experiments.
 - **Deployment options** – Install via Bioconda, Docker/Singularity images, or a source checkout with the supplied environment file.
@@ -35,14 +35,35 @@ HYMET performs contig-level metagenomic classification by combining Mash-based c
 | `testdataset/` | Utilities to assemble small synthetic evaluation sets. |
 | `data/`, `taxonomy_files/` | Expected locations for downloaded references and taxonomy dumps. |
 
+## Quick Start (First-Time Setup)
+
+After cloning the repository and creating your conda environment:
+
+```bash
+# 1. Create and activate environment
+mamba env create -f environment.yml
+conda activate hymet_env
+
+# 2. Initialize HYMET (downloads NCBI taxonomy, creates stubs, verifies installation)
+bin/hymet init
+
+# 3. Fetch Mash sketches from Zenodo (required for classification)
+tools/fetch_sketches.sh
+
+# 4. Verify everything is ready
+bin/hymet init
+```
+
+The `init` command automatically downloads NCBI taxonomy (~60MB) and generates the required hierarchy file. Use `--skip-taxonomy` to skip this if you already have the files or want to set them up manually.
+
 ## Quick Start Commands
 
 ```bash
 # Single-sample classification
 bin/hymet run   --contigs /path/to/sample.fna   --out results/sample   --threads 16
 
-# CAMI benchmark (HYMET + baselines)
-bin/hymet bench   --manifest bench/cami_manifest.tsv   --tools hymet,kraken2,centrifuge,ganon2,viwrap,tama,squeezemeta,megapath_nano   --threads 16
+# CAMI benchmark (HYMET + baselines; preset 'contigs' runs the default panel)
+bin/hymet bench   --manifest bench/cami_manifest.tsv   --tools contigs   --threads 16
 
 # Case-study bundle (MGnify gut + Zymo mock community)
 ./case/run_cases_full.sh   --threads 16      # canonical + gut + zymo suites; add --suite to limit the run
@@ -63,8 +84,10 @@ bin/hymet artifacts
 HYMET’s `run` subcommand is the supported way to classify your own assemblies or read sets; the CAMI harness is just a bundled example. A typical ad-hoc run looks like this:
 
 ```bash
-export HYMET_ROOT=/path/to/HYMET
-${HYMET_ENV}/bin/hymet run \
+conda activate hymet
+export HYMET_ROOT=/path/to/HYMET      # optional when running from a cloned repo
+# replace `bin/hymet` with `hymet` if the package is installed into the active environment
+bin/hymet run \
   --contigs my_assembly.fna \
   --out results/my_assembly \
   --threads 32 \
@@ -73,12 +96,12 @@ ${HYMET_ENV}/bin/hymet run \
 ```
 
 1. **Prepare inputs** – Provide a contig FASTA via `--contigs` or a read FASTA/FASTQ via `--reads`. Place the pre-built Mash sketches under `HYMET/data/` (see *Preparing Data* below) and point `taxonomy_files/` at a fresh NCBI dump. HYMET will download any missing reference genomes into `CACHE_ROOT` on demand.
-2. **Launch classification** – `hymet run` stages the sample under `OUTDIR`, copies your FASTA/FASTQ into `OUTDIR/input/`, screens candidates with Mash, downloads the needed references (or reuses a cache hit), aligns with minimap2, and resolves calls with the weighted LCA resolver. Tweak `--cand-max`, `--species-dedup`, `--threads`, `--cache-root`, or `--assembly-summary-dir` to fit your hardware and naming conventions. Passing `--keep-work` retains intermediates under `OUTDIR/work/` for debugging.
+2. **Launch classification** – `hymet run` stages the sample under `OUTDIR`, copies your FASTA/FASTQ into `OUTDIR/input/`, screens candidates with Mash, downloads the needed references (or reuses a cache hit), aligns with minimap2, and resolves calls with the weighted LCA resolver. Tweak `--cand-max`, `--species-dedup`, `--threads`, `--cache-root`, or `--assembly-summary-dir` to fit your hardware and naming conventions. When running via the benchmark harness, add `--keep-work` if you want it to retain intermediates under `OUTDIR/work/` for debugging.
 3. **Consume outputs** – Every run writes:
    - `OUTDIR/classified_sequences.tsv` – one row per contig/read with lineage, rank, TaxID, and confidence (compatible with downstream Krona/plots).
    - `OUTDIR/hymet.sample_0.cami.tsv` – CAMI-format profile built from the classification table (rename or symlink as desired for multi-sample batches).
    - `OUTDIR/metadata.json` – reproducibility snapshot (HYMET commit, sketch checksums, cache key, tool versions, tunables).
-   - `OUTDIR/logs/` plus `OUTDIR/work/` – diagnostics and reusable intermediates. Set `KEEP_HYMET_WORK=1` if you want to inspect minimap2 PAFs or the selected genome list later.
+   - `OUTDIR/logs/` plus `OUTDIR/work/` – diagnostics and reusable intermediates. For benchmark runs, pass `--keep-work` (or export `KEEP_HYMET_WORK=1`) to prevent the harness from deleting minimap2 artefacts; direct `bin/hymet run` invocations keep them by default.
 
 For throughput runs, iterate over samples in a simple shell loop or a workflow manager, changing only `--contigs/--reads` and `--out` per sample; the cache key (hash of `selected_genomes.txt`) lets multiple runs share downloaded references automatically.
 
@@ -91,11 +114,10 @@ For throughput runs, iterate over samples in a simple shell loop or a workflow m
   THREADS=8 CACHE_ROOT=data/downloaded_genomes/cache_bench \
   workflows/run_cami_suite.sh \
     --scenario cami \
-    --suite contig_full \
-    --contig-tools hymet,kraken2,centrifuge,ganon2,viwrap,tama,squeezemeta,megapath_nano \
-    --read-tools hymet_reads
+    --suite contig_full
   ```
 
+  Tool panels default to the selections in `workflows/config/cami_suite.cfg`; provide `--contig-tools` and/or `--read-tools` to override when experimenting.
   All artefacts for that run appear in `results/cami/contig_full/run_<timestamp>/`; nothing under `bench/out/` or `results/cami/canonical/` is touched.
 
 ## Installation Options
@@ -116,7 +138,7 @@ For throughput runs, iterate over samples in a simple shell loop or a workflow m
    ```
    Place NCBI taxonomy dumps under `HYMET/taxonomy_files/`. Builders in `bench/db/` derive tool-specific indices on demand.
 2. **CAMI subsets** – Use `bench/fetch_cami.sh` (supports `--dry-run`) to download the contigs listed in `bench/cami_manifest.tsv`.
-3. **Case-study contigs** – `case/fetch_case_data.sh` retrieves the MGnify gut assembly and Zymo mock community.
+3. **Case-study contigs** – `case/fetch_case_data.sh` downloads the Zymo mock community assembly (`http://nanopore.s3.climb.ac.uk/mockcommunity/v3/7cd60d3b-eafb-48d1-9aab-c8701232f2f8.ctg.cns.fa`) and the MGnify gut contigs (`https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00794604/file/ERZ24911249_FASTA.fasta.gz`) and stages them under `/data/case/`.
 4. **Truth tables** – CAMI truth lives under `bench/data/`; case-study truth files (including curated Zymo panels) live under `case/truth/`.
 
 ## Outputs at a Glance
@@ -124,7 +146,7 @@ For throughput runs, iterate over samples in a simple shell loop or a workflow m
 - Canonical CAMI artefacts: `results/cami/canonical/run_<timestamp>/` (raw benchmark outputs, summary tables, figures, metadata).
 - Reviewer suites: `results/cami/<suite>/run_<timestamp>/` (one folder per run). Raw per-tool outputs are grouped by mode; derived tables/figures live alongside metadata for immediate inspection.
 - Case studies and ablations follow the same pattern under `results/cases/…/run_<timestamp>/` and `results/ablation/…/run_<timestamp>/`.
-- Bench runs no longer write to `bench/out/` (all artefacts land in `results/<scenario>/<suite>/run_<timestamp>/…`). Case workflows follow the same convention: `case/run_case.sh` (and `bin/hymet case`) publish into `results/cases/<suite>/run_<timestamp>/…` unless you override the destination with `--out`.
+- Bench runs write intermediate outputs to `BENCH_OUT_ROOT` (defaults to `bench/out/`); unless you pass `--no-publish`, a snapshot is also mirrored to `results/<scenario>/<suite>/run_<timestamp>/…`. Case workflows follow the same convention: `case/run_case.sh` (and `bin/hymet case`) publish into `results/cases/<suite>/run_<timestamp>/…` unless you override the destination with `--out`.
 - Use `python bench/plot/make_figures.py --bench-root bench --tables <run>/tables --outdir <run>/figures` to regenerate figures for any run (keeps data and plots in sync).
 
 ## Documentation & Reporting

@@ -254,6 +254,132 @@ def command_version(args) -> None:
     print(git_version(repo_root))
 
 
+def command_init(args) -> None:
+    """Initialize HYMET environment: create required stub files and verify installation."""
+    repo_root: Path = args.repo_root
+    data_dir = repo_root / "data"
+    taxonomy_dir = repo_root / "taxonomy_files"
+
+    # Ensure data directory exists
+    data_dir.mkdir(parents=True, exist_ok=True)
+
+    # Auto-setup taxonomy if missing (unless --skip-taxonomy)
+    hierarchy = data_dir / "taxonomy_hierarchy.tsv"
+    needs_taxonomy = (
+        not taxonomy_dir.is_dir() or
+        not (taxonomy_dir / "nodes.dmp").exists() or
+        not hierarchy.exists() or
+        (hierarchy.exists() and hierarchy.stat().st_size == 0)
+    )
+
+    if needs_taxonomy and not getattr(args, "skip_taxonomy", False) and not args.quiet:
+        config_pl = repo_root / "config.pl"
+        if config_pl.exists():
+            print("[hymet init] Taxonomy files missing. Setting up from NCBI...")
+            print("  (this downloads ~60MB and generates the hierarchy file)")
+            print(flush=True)
+            try:
+                subprocess.run(["perl", str(config_pl)], cwd=repo_root, check=True)
+                print()
+            except subprocess.CalledProcessError as e:
+                print(f"[hymet init] Warning: config.pl failed (exit {e.returncode})")
+                print("  You can retry with: ./config.pl")
+                print()
+            except FileNotFoundError:
+                print("[hymet init] Warning: perl not found. Install perl or run ./config.pl manually.")
+                print()
+
+    issues = []
+    created = []
+    verified = []
+
+    # Create stub detailed_taxonomy.tsv if missing
+    # This file gets overwritten during runtime by downloadDB.py with actual taxonomy data
+    detailed_tax = data_dir / "detailed_taxonomy.tsv"
+    if not detailed_tax.exists() or detailed_tax.stat().st_size == 0:
+        detailed_tax.write_text("GCF\tTaxID\tIdentifiers\n", encoding="utf-8")
+        created.append(f"data/detailed_taxonomy.tsv (stub with header)")
+    elif detailed_tax.is_symlink():
+        # Check if symlink target exists
+        if not detailed_tax.resolve().exists():
+            detailed_tax.unlink()
+            detailed_tax.write_text("GCF\tTaxID\tIdentifiers\n", encoding="utf-8")
+            created.append(f"data/detailed_taxonomy.tsv (replaced broken symlink)")
+        else:
+            verified.append("data/detailed_taxonomy.tsv")
+    else:
+        verified.append("data/detailed_taxonomy.tsv")
+
+    # Check for required Mash sketches
+    sketches = ["sketch1.msh", "sketch2.msh", "sketch3.msh"]
+    for sketch in sketches:
+        sketch_path = data_dir / sketch
+        if sketch_path.exists() and sketch_path.stat().st_size > 0:
+            verified.append(f"data/{sketch}")
+        else:
+            issues.append(f"data/{sketch} missing - run: tools/fetch_sketches.sh")
+
+    # Check taxonomy_hierarchy.tsv (re-check after potential auto-setup)
+    if hierarchy.exists() and hierarchy.stat().st_size > 0:
+        verified.append("data/taxonomy_hierarchy.tsv")
+    else:
+        issues.append("data/taxonomy_hierarchy.tsv missing - run: ./config.pl")
+
+    # Check taxonomy_files directory
+    if taxonomy_dir.is_dir():
+        nodes = taxonomy_dir / "nodes.dmp"
+        names = taxonomy_dir / "names.dmp"
+        if nodes.exists() and names.exists():
+            verified.append("taxonomy_files/ (nodes.dmp, names.dmp)")
+        else:
+            issues.append("taxonomy_files/ incomplete - run: ./config.pl")
+    else:
+        issues.append("taxonomy_files/ missing - run: ./config.pl")
+
+    # Check required scripts
+    scripts = [
+        "scripts/mash.sh",
+        "scripts/minimap2.sh",
+        "scripts/classification_cami.py",
+        "tools/hymet2cami.py",
+        "tools/build_id_map.py",
+        "tools/mini_classify.py",
+    ]
+    for script in scripts:
+        script_path = repo_root / script
+        if script_path.exists():
+            verified.append(script)
+        else:
+            issues.append(f"{script} missing")
+
+    # Print results
+    print(f"[hymet init] Repository: {repo_root}")
+    print()
+
+    if created:
+        print("Created:")
+        for item in created:
+            print(f"  ✓ {item}")
+        print()
+
+    if verified:
+        print("Verified:")
+        for item in verified:
+            print(f"  ✓ {item}")
+        print()
+
+    if issues:
+        print("Issues requiring attention:")
+        for issue in issues:
+            print(f"  ✗ {issue}")
+        print()
+        print("Run 'bin/hymet init' again after resolving issues.")
+        if not args.quiet:
+            raise SystemExit(1)
+    else:
+        print("✓ HYMET environment is ready. Run: bin/hymet run --contigs <file> --out <dir>")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="HYMET unified command-line interface")
     parser.add_argument(
@@ -264,6 +390,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     ver_parser = subparsers.add_parser("version", help="Print HYMET version information")
     ver_parser.set_defaults(func=command_version)
+
+    init_parser = subparsers.add_parser("init", help="Initialize HYMET: create stub files and verify installation")
+    init_parser.add_argument("--quiet", "-q", action="store_true", help="Don't exit with error on missing files")
+    init_parser.add_argument("--skip-taxonomy", action="store_true", help="Skip automatic NCBI taxonomy download")
+    init_parser.set_defaults(func=command_init)
 
     run_parser = subparsers.add_parser("run", help="Run HYMET on a single sample")
     input_group = run_parser.add_mutually_exclusive_group(required=True)

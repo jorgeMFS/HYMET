@@ -86,6 +86,21 @@ done
 
 Capture the Python version and any warnings in your notes.
 
+### 4.3 Initialize HYMET
+
+Run the init command to create required stub files and verify your installation:
+
+```bash
+bin/hymet init
+```
+
+This command:
+- Creates `data/detailed_taxonomy.tsv` with the required header (this file is populated during classification runs)
+- Verifies that all required scripts exist
+- Reports any missing files with specific instructions to obtain them
+
+If you see issues, resolve them and run `bin/hymet init` again until all checks pass.
+
 ---
 
 ## 5. Reference assets
@@ -125,6 +140,13 @@ cd bench
 cd ..
 ```
 
+The helper downloads the official CAMI I sample\_0 archive from the Publisso
+mirror, extracts the required members into `/data/cami/`, and then generates
+the lightweight subsets (`cami_i_lc`, `cami_i_mc`, `cami_i_hc`,
+`cami_ii_mousegut`, `cami_ii_marine`, `cami_ii_strainmadness`) under
+`bench/data/`. The archive is cached in `bench/tmp_downloads/` so subsequent
+runs are offline.
+
 Outputs appear under `bench/data/<sample>/`. Confirm that each folder contains:
 - `contigs.fna`
 - `truth/` tables (`contigs.tsv`, `profile.tsv`)
@@ -133,11 +155,16 @@ Outputs appear under `bench/data/<sample>/`. Confirm that each folder contains:
 
 ```bash
 cd case
-./fetch_case_data.sh --dest data case/manifest.tsv
+./fetch_case_data.sh --dest data
 cd ..
 ```
 
-Verify `/data/case/gut_case_contigs.fna` and `/data/case/zymo_mc_contigs.fna` exist, plus truth sets under `case/truth/`.
+Verify `case/data/gut_case_contigs.fna` and `case/data/zymo_mc_contigs.fna` exist (or the directory you passed via `--dest`), plus truth sets under `case/truth/`.
+The helper downloads the Zymo mock community assembly from
+`http://nanopore.s3.climb.ac.uk/mockcommunity/v3/7cd60d3b-eafb-48d1-9aab-c8701232f2f8.ctg.cns.fa`
+and the MGnify gut contigs from
+`https://www.ebi.ac.uk/metagenomics/api/v1/analyses/MGYA00794604/file/ERZ24911249_FASTA.fasta.gz`
+before converting/renaming them into the expected layout.
 
 ---
 
@@ -177,16 +204,17 @@ THREADS=16 CACHE_ROOT=$(pwd)/bench/data/downloaded_genomes/cache_bench \
 workflows/run_cami_suite.sh \
   --scenario cami \
   --suite canonical \
-  --modes contigs \
-  --contig-tools hymet,kraken2,centrifuge,ganon2,viwrap,tama,squeezemeta,megapath_nano
+  --modes contigs
 ```
 
 The runner sets `BENCH_OUT_ROOT` per mode, stages every tool under `results/cami/canonical/run_<timestamp>/raw/<mode>/<sample>/<tool>/`, and copies the derived TSVs/figures into `tables/` and `figures/`. No manual `cp` steps are required.
 
+The contig tool roster defaults to the panel defined in `workflows/config/cami_suite.cfg`; supply `--contig-tools` if you need to deviate for exploratory runs.
+
 If you invoke the low-level harness directly (`bin/hymet bench` or `bench/run_all_cami.sh`), publish the results afterwards so they follow the same hierarchy:
 
 ```bash
-bench/run_all_cami.sh --manifest bench/cami_manifest.tsv --tools hymet,kraken2,centrifuge,ganon2,viwrap,tama,squeezemeta,megapath_nano
+bench/run_all_cami.sh --manifest bench/cami_manifest.tsv --tools contigs
 bench/publish_results.sh --scenario cami --suite canonical
 ```
 
@@ -208,8 +236,7 @@ THREADS=8 CACHE_ROOT=$(pwd)/bench/data/downloaded_genomes/cache_bench \
 workflows/run_cami_suite.sh \
   --scenario cami \
   --suite contig_full \
-  --contig-tools hymet,kraken2,centrifuge,ganon2,viwrap,tama,squeezemeta,megapath_nano \
-  --read-tools hymet_reads
+  --modes contigs,reads
 ```
 
 Each invocation creates `results/<scenario>/<suite>/run_<timestamp>/` with its own `raw/`, `tables/`, `figures/`, and `metadata.json`. Multiple runs can coexist simply by virtue of their timestamps. Folder anatomy:
@@ -217,7 +244,7 @@ Each invocation creates `results/<scenario>/<suite>/run_<timestamp>/` with its o
 - `tables/` – per-mode TSVs (summary, leaderboard, runtime, contig accuracy, manifest snapshot). When multiple modes are used, subdirectories (`tables/contigs/`, `tables/reads/`, …) keep them separated.
 - `figures/` – regenerated `fig_*.png` artefacts, likewise grouped per mode when applicable.
 - `metadata.json` – manifest path, commit hash, tool roster, command log, thread counts, and cache hints.
-- Use `--dry-run` to inspect commands without executing them. Add `--read-tools hymet_reads` if the reviewer comparison requires the pseudo-read mode.
+- Use `--dry-run` to inspect commands without executing them. Provide `--contig-tools`/`--read-tools` to override the default panels when experimenting (for example, add `--read-tools hymet_reads` if the reviewer comparison requires the pseudo-read mode).
 
 After the workflow completes, compute checksums directly in the suite directory:
 
@@ -247,14 +274,13 @@ export CACHE_ROOT="$(pwd)/data/downloaded_genomes/cache_case"
 export THREADS=8
 bin/hymet case --manifest case/manifest.tsv
 python case/plot_case.py --case-root results/cases/canonical/run_<timestamp>/raw --figures-dir results/cases/canonical/run_<timestamp>/figures
-python bench/plot/make_figures.py --bench-root bench --tables results/cases/canonical/run_<timestamp>/tables --outdir results/cases/canonical/run_<timestamp>/figures
 ```
 
 Outputs land under `results/cases/canonical/run_<timestamp>/`:
 - `raw/<sample>/hymet/` – CAMI profile, classified contigs, metadata.
 - `raw/<sample>/metaphlan/` – optional sanity comparison.
 - `tables/runtime_memory.tsv`, `tables/top_taxa_summary.tsv` – combined view.
-- `figures/` – case-study visualisations copied from `raw/figures/`.
+- `figures/` – runtime/memory panels and taxa breakdowns regenerated by `case/plot_case.py`.
 
 ### 9.2 Zymo curated-panel ablation
 
@@ -299,7 +325,6 @@ python bench/plot/make_figures.py --bench-root bench --tables results/cami/<suit
 # Case-study figures (published run)
 CASE_RUN=results/cases/canonical/run_<timestamp>
 python case/plot_case.py --case-root "$CASE_RUN/raw" --figures-dir "$CASE_RUN/figures"
-python bench/plot/make_figures.py --bench-root bench --tables "$CASE_RUN/tables" --outdir "$CASE_RUN/figures"
 
 # Ablation figures
 ABLATION_RUN=results/ablation/canonical/run_<timestamp>
