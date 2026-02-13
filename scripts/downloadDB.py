@@ -7,6 +7,7 @@ import csv
 import logging
 import subprocess
 import time
+import fcntl
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import defaultdict
 from time import sleep
@@ -52,6 +53,7 @@ class GenomeDownloader:
         Downloads the assembly summary files from NCBI (RefSeq and GenBank).
         Uses a shared directory to avoid duplicating ~1.6GB of data per cache key.
         Files are refreshed every REFRESH_DAYS (14 days by default).
+        Uses file locking and atomic rename to prevent race conditions.
         """
         summaries = {}
         os.makedirs(self.assembly_summary_dir, exist_ok=True)
@@ -62,14 +64,47 @@ class GenomeDownloader:
 
         for url, key in urls:
             cache_file = os.path.join(self.assembly_summary_dir, f"assembly_summary_{key}.txt")
+            lock_file = f"{cache_file}.lock"
+            
+            # Check if likely needs update (fast path)
             if not os.path.exists(cache_file) or self._needs_refresh(cache_file):
-                logging.info(f"Downloading {key} assembly summary to shared location: {cache_file}")
-                self.download_file_wget(url, cache_file)
+                logging.info(f"Acquiring lock for {key} assembly summary...")
+                with open(lock_file, 'w') as lock_f:
+                    try:
+                        # Acquire exclusive lock
+                        fcntl.flock(lock_f, fcntl.LOCK_EX)
+                        
+                        # Double-check under lock
+                        if not os.path.exists(cache_file) or self._needs_refresh(cache_file):
+                            logging.info(f"Downloading {key} assembly summary to shared location: {cache_file}")
+                            temp_file = f"{cache_file}.tmp"
+                            try:
+                                self.download_file_wget(url, temp_file)
+                                os.rename(temp_file, cache_file)
+                                logging.info(f"Successfully updated {cache_file}")
+                            except Exception as e:
+                                if os.path.exists(temp_file):
+                                    os.remove(temp_file)
+                                raise e
+                        else:
+                             logging.info(f"Using cached {key} assembly summary (updated by another process): {cache_file}")
+                    
+                    finally:
+                        fcntl.flock(lock_f, fcntl.LOCK_UN)
             else:
                 logging.info(f"Using cached {key} assembly summary: {cache_file}")
+            
             summaries[key] = cache_file
+            
+            # Clean up lock file (best effort)
+            try:
+                if os.path.exists(lock_file):
+                    os.remove(lock_file)
+            except OSError:
+                pass # Ignore if already removed or permission issue
 
         return summaries
+
 
     def download_file_wget(self, url, destination, retries=RETRIES):
         """
