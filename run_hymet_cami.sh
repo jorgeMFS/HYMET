@@ -215,11 +215,13 @@ if [ -n "${CACHE_FASTA_OVERRIDE}" ]; then
 else
   if [ ! -s "${CACHE_FASTA}" ]; then
     log "downloadDB.py (cache ${CACHE_KEY})"
+    # Pass ASSEMBLY_SUMMARY_DIR as 5th arg to share ~1.6GB of assembly summaries across cache keys
     python3 scripts/downloadDB.py \
       output/selected_genomes.txt \
       "${CACHE_DIR}" \
       "${CACHE_TAX}" \
-      "${CACHE_DL}"
+      "${CACHE_DL}" \
+      "${ASSEMBLY_SUMMARY_DIR}"
   else
     log "cache hit for ${CACHE_KEY}; reusing ${CACHE_FASTA}"
   fi
