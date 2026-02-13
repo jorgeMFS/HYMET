@@ -91,12 +91,21 @@ check_file_with_hint "scripts/minimap2.sh" "Repository may be incomplete - re-cl
 check_file_with_hint "scripts/classification_cami.py" "Repository may be incomplete - re-clone or check git status"
 
 # detailed_taxonomy.tsv: create stub if missing (gets populated by downloadDB.py during run)
-if [ ! -s "data/detailed_taxonomy.tsv" ]; then
+# detailed_taxonomy.tsv: create stub if missing (gets populated by downloadDB.py during run)
+# Only attempt to create if data directory is writable (for Singularity compatibility)
+if [ ! -s "data/detailed_taxonomy.tsv" ] && [ -w "data" ]; then
   log "Creating stub data/detailed_taxonomy.tsv (will be populated during Mash → Download phase)"
   mkdir -p data
   printf "GCF\tTaxID\tIdentifiers\n" > data/detailed_taxonomy.tsv
 fi
-[ -d taxonomy_files ] || { log "taxonomy_files missing → running ./config.pl"; ./config.pl; }
+[ -d taxonomy_files ] || { 
+  if [ -w . ]; then
+    log "taxonomy_files missing → running ./config.pl"
+    ./config.pl
+  else
+    log "WARNING: taxonomy_files missing but current directory is read-only. Skiping auto-config."
+  fi
+}
 
 # Check for required external tools
 for tool in "${ROOT}/tools/hymet2cami.py" "${ROOT}/tools/build_id_map.py" "${ROOT}/tools/mini_classify.py"; do
@@ -226,10 +235,15 @@ else
     log "cache hit for ${CACHE_KEY}; reusing ${CACHE_FASTA}"
   fi
 fi
-mkdir -p "${ROOT}/data/downloaded_genomes"
-mkdir -p "${ROOT}/data"
-ln -sf "$(readlink -f "${CACHE_FASTA}")" "${ROOT}/data/downloaded_genomes/combined_genomes.fasta"
-ln -sf "$(readlink -f "${CACHE_TAX}")" "${ROOT}/data/detailed_taxonomy.tsv"
+# Ensure directory exists and is writable before symlinking (for Singularity compatibility)
+if [ -w "${ROOT}/data" ] || [ -w "${ROOT}" ]; then
+  mkdir -p "${ROOT}/data/downloaded_genomes"
+  mkdir -p "${ROOT}/data"
+  ln -sf "$(readlink -f "${CACHE_FASTA}")" "${ROOT}/data/downloaded_genomes/combined_genomes.fasta"
+  ln -sf "$(readlink -f "${CACHE_TAX}")" "${ROOT}/data/detailed_taxonomy.tsv"
+else
+  log "Read-only root detected; skipping symlink creation in ${ROOT}/data/ (using cached paths directly)"
+fi
 
 # 4) minimap2 index+map
 if [ ! -s output/resultados.paf ]; then
@@ -242,7 +256,7 @@ fi
 log "classification_cami.py on raw PAF"
 python3 scripts/classification_cami.py \
   --paf output/resultados.paf \
-  --taxonomy data/detailed_taxonomy.tsv \
+  --taxonomy "${CACHE_TAX}" \
   --hierarchy data/taxonomy_hierarchy.tsv \
   --output output/classified_sequences.tsv \
   --processes "${HYMET_CLASSIFY_PROCESSES:-$THREADS}" || true
@@ -258,7 +272,7 @@ if [ "$ROWS" -lt 2 ]; then
   [ -f "$BUILD_ID_MAP" ] || die "missing build_id_map.py: $BUILD_ID_MAP"
   [ -f "$MINI_CLASSIFY" ] || die "missing mini_classify.py: $MINI_CLASSIFY"
 
-  python3 "$BUILD_ID_MAP" data/detailed_taxonomy.tsv "$WORKDIR/id_to_taxid.tsv" | tee "$OUTDIR/logs/step_fallback_build_map.log"
+  python3 "$BUILD_ID_MAP" "${CACHE_TAX}" "$WORKDIR/id_to_taxid.tsv" | tee "$OUTDIR/logs/step_fallback_build_map.log"
   python3 "$MINI_CLASSIFY" output/resultados.paf "$WORKDIR/id_to_taxid.tsv" "$WORKDIR/fallback_classified.tsv" | tee "$OUTDIR/logs/step_fallback_classify.log"
 
   # Convert mini_classify output to HYMET format if needed
