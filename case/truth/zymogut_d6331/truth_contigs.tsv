@@ -1,0 +1,536 @@
+contig_id	species	taxid	ref_name	coverage	mapq
+contig_1	fusobacterium	848	Fusobacterium_nucleatum	0.5112	60
+contig_101	candida albicans	5476	28824	0.2522	60
+contig_102	saccharomyces cerevisiae	4932	tig00000018	0.9993	60
+contig_103	methanobrevibacter smithii	2173	methanobrevibacter_smithii	0.9830	60
+contig_104	candida albicans	5476	27027	0.0804	60
+contig_105	saccharomyces cerevisiae	4932	tig00000069	0.9958	60
+contig_106	saccharomyces cerevisiae	4932	tig00000072	0.9983	60
+contig_108	escherichia coli	562	E.coli.b2207.final.genome	0.9724	0
+contig_109	escherichia	561	Escherichia_coli_chromosome	0.9999	6
+contig_11	escherichia coli	562	E.coli.b2207.final.genome	0.9998	60
+contig_110	saccharomyces cerevisiae	4932	tig00000055	0.9949	60
+contig_111	candida albicans	5476	26831	0.8906	60
+contig_112	candida albicans	5476	28831	0.1231	60
+contig_113	escherichia	561	Escherichia_coli_chromosome	0.9993	60
+contig_114	escherichia coli	562	E.coli.b2207.final.genome	0.9998	60
+contig_115	candida albicans	5476	28571	0.1978	60
+contig_116	saccharomyces cerevisiae	4932	tig00000001	0.9983	60
+contig_118	prevotella	838	Prevotella_corporis.final.genome1	0.9750	60
+contig_119	escherichia coli	562	E.coli.B766.final.genome	0.9820	60
+contig_120	escherichia	561	Escherichia_coli_B3008	0.9944	60
+contig_121	escherichia	561	Escherichia_coli_B3008	0.9979	23
+contig_124	escherichia coli	562	E.coli.b2207.final.genome	0.9977	60
+contig_125	escherichia	561	Escherichia_coli_B3008	0.9826	60
+contig_127	escherichia coli	562	E.coli.b2207.final.genome	0.9993	60
+contig_128	candida albicans	5476	28949	0.0342	60
+contig_129	candida albicans	5476	28413	0.3636	60
+contig_13	escherichia	561	Escherichia_coli_B3008	0.9992	60
+contig_130	candida albicans	5476	28384	0.4065	60
+contig_131	saccharomyces cerevisiae	4932	tig00000055	0.9996	60
+contig_133	saccharomyces cerevisiae	4932	tig00000001	0.9953	60
+contig_134	escherichia	561	Escherichia_coli_B3008	0.9992	60
+contig_135	escherichia coli	562	E.coli.JM109.final.genome	0.9978	1
+contig_136	candida albicans	5476	28702	0.2101	60
+contig_137	candida albicans	5476	28388	0.0633	60
+contig_138	clostridioides difficile	1496	Clostridium_difficille	0.9999	60
+contig_139	clostridioides difficile	1496	Clostridium_difficille	0.7546	60
+contig_14	escherichia	561	Escherichia_coli_B3008	0.9993	60
+contig_140	clostridioides difficile	1496	Clostridium_difficille	0.9999	60
+contig_141	saccharomyces cerevisiae	4932	tig00000011	0.9961	60
+contig_142	candida albicans	5476	28345	0.1553	60
+contig_143	escherichia	561	Escherichia_coli_B3008	0.9985	60
+contig_144	escherichia	561	Escherichia_coli_chromosome	0.9998	60
+contig_145	escherichia coli	562	E.coli.B766.final.genome	0.9988	60
+contig_146	candida albicans	5476	28309	0.2159	60
+contig_147	saccharomyces cerevisiae	4932	tig00000072	0.9977	60
+contig_148	candida albicans	5476	28550	0.2964	60
+contig_149	candida albicans	5476	28438	0.6474	60
+contig_15	escherichia coli	562	E.coli.b2207.final.genome	0.9994	60
+contig_150	saccharomyces cerevisiae	4932	tig00000125	0.9725	60
+contig_151	saccharomyces cerevisiae	4932	tig00000031	0.9985	60
+contig_152	saccharomyces cerevisiae	4932	tig00000011	0.9925	60
+contig_153	prevotella	838	Prevotella_corporis.final.genome2	0.8548	60
+contig_154	saccharomyces cerevisiae	4932	tig00000063	0.9996	60
+contig_156	saccharomyces cerevisiae	4932	tig00000051	0.9984	60
+contig_158	saccharomyces cerevisiae	4932	tig00000069	0.9980	60
+contig_159	saccharomyces cerevisiae	4932	tig00000051	0.9947	60
+contig_16	escherichia coli	562	E.coli.B766.final.genome	0.9842	2
+contig_160	saccharomyces cerevisiae	4932	tig00000023	0.9908	7
+contig_162	saccharomyces cerevisiae	4932	tig00000023	0.9995	60
+contig_163	saccharomyces cerevisiae	4932	tig00000051	0.9914	60
+contig_165	saccharomyces cerevisiae	4932	tig00000003	0.9842	60
+contig_166	saccharomyces cerevisiae	4932	tig00000069	0.9991	60
+contig_167	saccharomyces cerevisiae	4932	tig00000054	0.9979	0
+contig_168	saccharomyces cerevisiae	4932	tig00000001	0.9848	60
+contig_169	candida albicans	5476	28446	0.3213	60
+contig_17	escherichia coli	562	E.coli.B766.final.genome	0.9964	2
+contig_170	escherichia coli	562	E.coli.b2207.final.genome	0.9898	60
+contig_171	escherichia coli	562	E.coli.JM109.final.genome	0.9945	2
+contig_172	escherichia coli	562	E.coli.b2207.final.genome	0.9980	60
+contig_173	escherichia coli	562	E.coli.b2207.final.genome	0.9935	60
+contig_174	escherichia coli	562	E.coli.JM109.final.genome	0.9987	60
+contig_175	escherichia	561	Escherichia_coli_B3008	0.9908	31
+contig_176	escherichia coli	562	E.coli.JM109.final.genome	0.8414	3
+contig_177	escherichia coli	562	E.coli.B766.final.genome	0.9926	60
+contig_178	escherichia	561	Escherichia_coli_B3008	0.9955	20
+contig_179	escherichia coli	562	E.coli.b2207.final.genome	0.9971	19
+contig_18	escherichia coli	562	E.coli.b2207.final.genome	0.9980	60
+contig_180	escherichia coli	562	E.coli.b2207.final.genome	0.9952	60
+contig_181	escherichia coli	562	E.coli.b2207.final.genome	0.9998	60
+contig_182	escherichia	561	Escherichia_coli_chromosome	0.9998	60
+contig_183	escherichia coli	562	E.coli.b2207.final.genome	0.9997	60
+contig_184	escherichia coli	562	E.coli.B766.final.genome	0.9832	6
+contig_185	escherichia coli	562	E.coli.b2207.final.genome	0.9998	60
+contig_186	candida albicans	5476	24353	0.2516	60
+contig_187	bacteroides	816	Bacteroides_fragilis	0.9854	60
+contig_188	saccharomyces cerevisiae	4932	tig00000003	0.9999	60
+contig_189	saccharomyces cerevisiae	4932	tig00000071	0.5938	60
+contig_19	escherichia coli	562	E.coli.b2207.final.genome	0.9931	0
+contig_190	saccharomyces cerevisiae	4932	tig00000140	0.7981	60
+contig_191	saccharomyces cerevisiae	4932	tig00000071	0.9775	60
+contig_192	saccharomyces cerevisiae	4932	tig00000071	0.9994	60
+contig_193	saccharomyces cerevisiae	4932	tig00000055	0.9959	60
+contig_194	escherichia coli	562	E.coli.b2207.final.genome	0.9992	0
+contig_195	escherichia coli	562	E.coli.B766.final.genome	0.9978	60
+contig_197	escherichia coli	562	E.coli.JM109.final.genome	0.9999	2
+contig_198	escherichia	561	Escherichia_coli_B3008	0.4986	60
+contig_199	escherichia coli	562	E.coli.B766.final.genome	0.9973	60
+contig_2	roseburia	841	Roseburia_hominis	0.7309	60
+contig_200	escherichia	561	Escherichia_coli_B3008	0.9855	60
+contig_203	candida albicans	5476	23015	0.2140	60
+contig_204	candida albicans	5476	28940	0.0801	60
+contig_205	candida albicans	5476	3053	0.3616	60
+contig_208	candida albicans	5476	28947	0.2195	60
+contig_209	escherichia coli	562	E.coli.b2207.final.genome	0.9995	60
+contig_21	escherichia coli	562	E.coli.b2207.final.genome	0.9937	32
+contig_210	escherichia coli	562	E.coli.JM109.final.genome	0.9984	60
+contig_211	candida albicans	5476	18621	0.0813	60
+contig_212	saccharomyces cerevisiae	4932	tig00000023	0.9988	60
+contig_213	saccharomyces cerevisiae	4932	tig00000003	0.9993	60
+contig_214	saccharomyces cerevisiae	4932	tig00000042	0.9990	60
+contig_215	saccharomyces cerevisiae	4932	tig00000047	0.8952	60
+contig_216	saccharomyces cerevisiae	4932	tig00000051	0.9930	0
+contig_217	escherichia coli	562	E.coli.JM109.final.genome	0.9743	0
+contig_218	escherichia coli	562	E.coli.JM109.final.genome	0.9830	0
+contig_22	escherichia	561	Escherichia_coli_chromosome	0.7620	60
+contig_222	escherichia coli	562	E.coli.b2207.final.genome	0.9998	60
+contig_223	escherichia	561	Escherichia_coli_chromosome	0.9850	60
+contig_224	candida albicans	5476	28911	0.3909	60
+contig_226	candida albicans	5476	28364	0.7731	60
+contig_227	candida albicans	5476	24487	0.1121	60
+contig_228	candida albicans	5476	28959	0.5192	60
+contig_229	akkermansia	239934	Akkermansia_muciniphila	0.7160	60
+contig_23	escherichia coli	562	E.coli.JM109.final.genome	0.9995	60
+contig_230	candida albicans	5476	28200	0.0953	60
+contig_231	candida albicans	5476	25873	0.1389	60
+contig_232	clostridioides difficile	1496	Clostridium_difficille	0.9994	60
+contig_233	escherichia coli	562	E.coli.B766.final.genome	0.9976	60
+contig_234	escherichia coli	562	E.coli.b2207.final.genome	0.9970	60
+contig_235	escherichia coli	562	E.coli.B766.final.genome	0.6638	60
+contig_236	escherichia coli	562	E.coli.B766.final.genome	0.9991	60
+contig_237	saccharomyces cerevisiae	4932	tig00000140	0.9589	52
+contig_238	saccharomyces cerevisiae	4932	tig00000001	0.9933	60
+contig_239	saccharomyces cerevisiae	4932	tig00000023	0.9969	60
+contig_24	clostridioides difficile	1496	Clostridium_difficille	0.9949	60
+contig_240	saccharomyces cerevisiae	4932	tig00000011	0.9960	60
+contig_241	saccharomyces cerevisiae	4932	tig00000036	0.9908	60
+contig_242	saccharomyces cerevisiae	4932	tig00000104	0.9983	60
+contig_243	candida albicans	5476	28562	0.2282	60
+contig_244	candida albicans	5476	28266	0.4255	60
+contig_245	candida albicans	5476	25592	0.0587	60
+contig_246	saccharomyces cerevisiae	4932	tig00000072	0.9978	60
+contig_247	candida albicans	5476	28596	0.8151	60
+contig_248	candida albicans	5476	28873	0.3199	60
+contig_249	candida albicans	5476	24158	0.1341	60
+contig_25	candida albicans	5476	27110	0.4459	60
+contig_250	candida albicans	5476	28567	0.3713	60
+contig_251	saccharomyces cerevisiae	4932	tig00000018	0.9914	60
+contig_252	candida albicans	5476	27049	0.0910	60
+contig_253	candida albicans	5476	27003	0.6818	60
+contig_254	candida albicans	5476	28397	0.0443	60
+contig_255	candida albicans	5476	26666	0.0839	60
+contig_256	candida albicans	5476	28488	0.1874	60
+contig_257	candida albicans	5476	25849	0.1338	60
+contig_258	saccharomyces cerevisiae	4932	tig00000023	0.9973	60
+contig_259	escherichia	561	Escherichia_coli_B3008	0.9976	11
+contig_26	candida albicans	5476	28597	0.0576	60
+contig_260	escherichia coli	562	E.coli.JM109.final.genome	1.0000	11
+contig_261	escherichia coli	562	E.coli.b2207.final.genome	0.9930	60
+contig_262	escherichia coli	562	E.coli.JM109.final.genome	0.9972	5
+contig_263	escherichia coli	562	E.coli.b2207.final.genome	0.9975	60
+contig_264	escherichia coli	562	E.coli.B766.final.genome	0.9943	60
+contig_265	escherichia coli	562	E.coli.b2207.final.genome	0.9845	60
+contig_266	candida albicans	5476	28811	0.2161	60
+contig_267	escherichia coli	562	E.coli.b2207.final.genome	0.9996	60
+contig_268	escherichia	561	Escherichia_coli_B3008	0.9998	60
+contig_269	candida albicans	5476	28270	0.1358	60
+contig_27	saccharomyces cerevisiae	4932	tig00000036	0.9987	60
+contig_270	saccharomyces cerevisiae	4932	tig00000306	0.9905	60
+contig_272	candida albicans	5476	28408	0.2091	60
+contig_273	escherichia coli	562	E.coli.B766.final.genome	0.9965	60
+contig_274	saccharomyces cerevisiae	4932	tig00000031	0.9842	60
+contig_275	saccharomyces cerevisiae	4932	tig00000072	0.9826	60
+contig_276	candida albicans	5476	23867	0.0607	60
+contig_277	candida albicans	5476	28537	0.5079	60
+contig_278	candida albicans	5476	28703	0.0486	60
+contig_279	saccharomyces cerevisiae	4932	tig00000094	0.9988	60
+contig_28	escherichia coli	562	E.coli.JM109.final.genome	0.9953	0
+contig_280	candida albicans	5476	28515	0.2242	60
+contig_281	candida albicans	5476	26615	0.1479	60
+contig_282	candida albicans	5476	27033	0.2109	60
+contig_283	escherichia	561	Escherichia_coli_B3008	0.9986	60
+contig_284	escherichia coli	562	E.coli.JM109.final.genome	0.9947	60
+contig_285	escherichia coli	562	E.coli.b2207.final.genome	0.9869	60
+contig_286	escherichia coli	562	E.coli.JM109.final.genome	0.9991	60
+contig_287	escherichia coli	562	E.coli.B766.final.genome	0.9969	60
+contig_288	escherichia	561	Escherichia_coli_chromosome	0.9962	60
+contig_289	escherichia coli	562	E.coli.B766.final.genome	0.9991	60
+contig_291	escherichia	561	Escherichia_coli_B3008	0.9978	60
+contig_292	candida albicans	5476	25131	0.1173	60
+contig_293	candida albicans	5476	26128	0.1110	60
+contig_294	candida albicans	5476	28269	0.0547	60
+contig_297	saccharomyces cerevisiae	4932	tig00000031	0.9946	60
+contig_298	clostridioides difficile	1496	Clostridium_difficille	0.9996	60
+contig_299	candida albicans	5476	28842	0.1936	60
+contig_3	saccharomyces cerevisiae	4932	tig00000011	0.9992	60
+contig_30	escherichia	561	Escherichia_coli_B3008	0.9943	0
+contig_300	candida albicans	5476	28880	0.2775	60
+contig_301	escherichia coli	562	E.coli.JM109.final.genome	0.9950	1
+contig_303	candida albicans	5476	25279	0.0300	60
+contig_304	saccharomyces cerevisiae	4932	tig00000128	0.9977	60
+contig_306	escherichia	561	Escherichia_coli_chromosome	0.9896	1
+contig_307	escherichia coli	562	E.coli.b2207.final.plasmid	0.1137	60
+contig_309	escherichia	561	Escherichia_coli_B3008	0.4458	1
+contig_31	escherichia	561	Escherichia_coli_chromosome	0.9993	60
+contig_310	escherichia	561	Escherichia_coli_B3008	0.9937	60
+contig_312	clostridioides difficile	1496	Clostridium_difficille	0.9966	60
+contig_313	candida albicans	5476	28320	0.5053	60
+contig_314	saccharomyces cerevisiae	4932	tig00000051	0.9990	60
+contig_315	candida albicans	5476	28838	0.3199	60
+contig_316	candida albicans	5476	28680	0.1047	60
+contig_317	candida albicans	5476	28681	0.0936	60
+contig_318	candida albicans	5476	28412	0.5876	60
+contig_319	candida albicans	5476	25876	0.1134	60
+contig_32	escherichia coli	562	E.coli.JM109.final.plasmid	0.6570	60
+contig_320	saccharomyces cerevisiae	4932	tig00000308	0.9990	60
+contig_321	candida albicans	5476	26508	0.0999	60
+contig_323	escherichia coli	562	E.coli.JM109.final.genome	0.9988	0
+contig_324	escherichia coli	562	E.coli.JM109.final.genome	1.0000	1
+contig_326	escherichia coli	562	E.coli.b2207.final.genome	0.9985	4
+contig_327	saccharomyces cerevisiae	4932	tig00000001	0.9992	60
+contig_328	candida albicans	5476	28944	0.1351	60
+contig_329	candida albicans	5476	28264	0.3987	60
+contig_33	escherichia	561	Escherichia_coli_chromosome	0.9995	4
+contig_330	candida albicans	5476	15165	0.2123	60
+contig_331	methanobrevibacter smithii	2173	methanobrevibacter_smithii	0.9943	60
+contig_332	candida albicans	5476	28826	0.1222	20
+contig_333	saccharomyces cerevisiae	4932	tig00000047	0.5467	60
+contig_335	escherichia coli	562	E.coli.B766.final.genome	0.9998	60
+contig_336	escherichia coli	562	E.coli.JM109.final.genome	0.9984	60
+contig_338	escherichia coli	562	E.coli.JM109.final.genome	0.9948	6
+contig_339	escherichia coli	562	E.coli.B766.final.genome	0.9977	60
+contig_34	escherichia	561	Escherichia_coli_chromosome	0.9989	27
+contig_341	escherichia coli	562	E.coli.JM109.final.genome	0.9914	60
+contig_342	escherichia coli	562	E.coli.B766.final.genome	0.9977	60
+contig_343	escherichia coli	562	E.coli.B766.final.genome	0.9921	60
+contig_344	escherichia	561	Escherichia_coli_B3008	0.9878	29
+contig_345	escherichia	561	Escherichia_coli_B3008	0.9949	60
+contig_346	escherichia coli	562	E.coli.B766.final.genome	0.9900	60
+contig_347	escherichia coli	562	E.coli.b2207.final.genome	0.9959	25
+contig_348	escherichia	561	Escherichia_coli_B3008	0.9910	34
+contig_349	escherichia coli	562	E.coli.B766.final.genome	0.9884	60
+contig_35	escherichia coli	562	E.coli.b2207.final.plasmid	0.8064	60
+contig_350	escherichia	561	Escherichia_coli_B3008	0.9969	60
+contig_351	escherichia	561	Escherichia_coli_chromosome	0.9800	14
+contig_353	escherichia	561	Escherichia_coli_B3008	0.9967	60
+contig_354	escherichia	561	Escherichia_coli_B3008	0.9953	13
+contig_355	escherichia coli	562	E.coli.JM109.final.genome	0.9980	0
+contig_356	escherichia coli	562	E.coli.B766.final.genome	0.9825	7
+contig_358	escherichia coli	562	E.coli.JM109.final.genome	0.9986	1
+contig_36	escherichia coli	562	E.coli.b2207.final.genome	0.9998	60
+contig_360	escherichia	561	Escherichia_coli_B3008	0.9987	60
+contig_362	escherichia coli	562	E.coli.JM109.final.genome	0.9856	0
+contig_364	escherichia coli	562	E.coli.JM109.final.genome	0.9974	0
+contig_365	escherichia	561	Escherichia_coli_B3008	0.9972	60
+contig_366	escherichia coli	562	E.coli.JM109.final.genome	0.9994	0
+contig_367	escherichia coli	562	E.coli.B766.final.genome	0.9981	60
+contig_368	escherichia	561	Escherichia_coli_B3008	0.9887	10
+contig_369	escherichia coli	562	E.coli.B766.final.genome	0.9888	0
+contig_37	escherichia	561	Escherichia_coli_chromosome	0.9949	60
+contig_370	escherichia coli	562	E.coli.JM109.final.genome	0.9997	0
+contig_371	escherichia coli	562	E.coli.B766.final.genome	0.9986	60
+contig_373	escherichia	561	Escherichia_coli_chromosome	0.9969	0
+contig_374	escherichia	561	Escherichia_coli_chromosome	1.0000	4
+contig_375	escherichia coli	562	E.coli.B766.final.genome	0.9957	60
+contig_376	escherichia coli	562	E.coli.JM109.final.genome	0.9993	1
+contig_378	escherichia coli	562	E.coli.b2207.final.genome	0.9985	0
+contig_38	escherichia coli	562	E.coli.B766.final.genome	0.9998	60
+contig_380	escherichia coli	562	E.coli.B766.final.genome	0.9991	60
+contig_381	escherichia	561	Escherichia_coli_B3008	0.9986	0
+contig_382	escherichia coli	562	E.coli.B766.final.genome	0.9959	60
+contig_383	escherichia coli	562	E.coli.JM109.final.genome	0.9988	60
+contig_384	escherichia	561	Escherichia_coli_chromosome	0.9994	60
+contig_386	saccharomyces cerevisiae	4932	tig00000036	0.9989	60
+contig_387	clostridioides difficile	1496	Clostridium_difficille	0.9998	60
+contig_388	candida albicans	5476	28228	0.0600	60
+contig_389	saccharomyces cerevisiae	4932	tig00000001	0.9958	60
+contig_39	escherichia	561	Escherichia_coli_B3008	0.9999	60
+contig_390	candida albicans	5476	28710	0.3435	60
+contig_391	saccharomyces cerevisiae	4932	tig00000023	0.9990	60
+contig_392	candida albicans	5476	24614	0.0523	60
+contig_393	escherichia coli	562	E.coli.B766.final.plasmid2	0.9606	60
+contig_394	candida albicans	5476	28446	0.7874	60
+contig_395	saccharomyces cerevisiae	4932	tig00000023	0.9979	60
+contig_396	saccharomyces cerevisiae	4932	tig00000031	0.9977	60
+contig_397	saccharomyces cerevisiae	4932	tig00000001	0.9958	60
+contig_398	candida albicans	5476	25280	0.0960	60
+contig_399	saccharomyces cerevisiae	4932	tig00000306	0.9943	60
+contig_4	escherichia	561	Escherichia_coli_B3008	0.9891	60
+contig_40	escherichia coli	562	E.coli.JM109.final.genome	0.9989	60
+contig_400	saccharomyces cerevisiae	4932	tig00000055	0.8523	60
+contig_401	saccharomyces cerevisiae	4932	tig00000139	0.9984	60
+contig_402	saccharomyces cerevisiae	4932	tig00000031	0.9977	60
+contig_403	candida albicans	5476	28647	0.2362	60
+contig_404	methanobrevibacter smithii	2173	methanobrevibacter_smithii	0.9965	60
+contig_405	saccharomyces cerevisiae	4932	tig00000001	0.9990	60
+contig_407	saccharomyces cerevisiae	4932	tig00000051	0.9955	60
+contig_408	saccharomyces cerevisiae	4932	tig00000011	0.9975	60
+contig_409	candida albicans	5476	28854	0.0339	60
+contig_41	saccharomyces cerevisiae	4932	tig00000018	0.9991	60
+contig_410	saccharomyces cerevisiae	4932	tig00000003	0.9981	60
+contig_411	candida albicans	5476	26776	0.1965	60
+contig_412	candida albicans	5476	24670	0.0375	60
+contig_413	saccharomyces cerevisiae	4932	tig00000071	0.9804	60
+contig_414	candida albicans	5476	28713	0.6166	60
+contig_415	saccharomyces cerevisiae	4932	tig00000001	0.9961	60
+contig_416	saccharomyces cerevisiae	4932	tig00000140	0.9983	60
+contig_42	candida albicans	5476	24690	0.0710	60
+contig_420	candida albicans	5476	28659	0.2007	60
+contig_421	candida albicans	5476	25915	0.0722	60
+contig_422	clostridioides difficile	1496	Clostridium_difficille	0.9965	60
+contig_423	saccharomyces cerevisiae	4932	tig00000031	0.9981	60
+contig_424	saccharomyces cerevisiae	4932	tig00000069	0.9980	60
+contig_425	saccharomyces cerevisiae	4932	tig00000139	0.9962	60
+contig_426	saccharomyces cerevisiae	4932	tig00000001	0.9976	60
+contig_427	saccharomyces cerevisiae	4932	tig00000072	0.9951	60
+contig_428	candida albicans	5476	28871	0.1973	60
+contig_429	candida albicans	5476	24915	0.0956	60
+contig_43	candida albicans	5476	28948	0.4378	60
+contig_430	candida albicans	5476	28843	0.1845	60
+contig_431	candida albicans	5476	28322	0.2859	60
+contig_432	saccharomyces cerevisiae	4932	tig00000003	0.9972	60
+contig_433	candida albicans	5476	23966	0.2602	60
+contig_434	saccharomyces cerevisiae	4932	tig00000001	0.9988	60
+contig_436	saccharomyces cerevisiae	4932	tig00000163	0.9977	27
+contig_438	saccharomyces cerevisiae	4932	tig00000031	0.9987	60
+contig_439	saccharomyces cerevisiae	4932	tig00000001	0.9983	60
+contig_44	saccharomyces cerevisiae	4932	tig00000306	0.9985	60
+contig_440	candida albicans	5476	28803	0.8695	60
+contig_441	saccharomyces cerevisiae	4932	tig00000071	0.9978	60
+contig_442	candida albicans	5476	24187	0.0900	60
+contig_443	candida albicans	5476	28676	0.0534	60
+contig_444	saccharomyces cerevisiae	4932	tig00000051	0.9986	60
+contig_445	candida albicans	5476	28505	0.1761	60
+contig_446	candida albicans	5476	28589	0.0652	60
+contig_447	candida albicans	5476	28919	0.4869	60
+contig_448	saccharomyces cerevisiae	4932	tig00000018	0.9990	60
+contig_449	saccharomyces cerevisiae	4932	tig00000011	0.9917	60
+contig_45	candida albicans	5476	28548	0.1526	60
+contig_450	saccharomyces cerevisiae	4932	tig00000003	0.9955	60
+contig_451	saccharomyces cerevisiae	4932	tig00000031	0.9986	60
+contig_452	saccharomyces cerevisiae	4932	tig00000134	0.9975	0
+contig_453	bifidobacterium adolescentis	1680	Bifidobacterium_adolescentis	0.9509	60
+contig_454	candida albicans	5476	27084	0.4111	60
+contig_455	candida albicans	5476	26543	0.0615	60
+contig_456	saccharomyces cerevisiae	4932	tig00000001	0.9982	60
+contig_457	saccharomyces cerevisiae	4932	tig00000001	0.9978	60
+contig_458	candida albicans	5476	28287	0.3010	60
+contig_459	candida albicans	5476	28841	0.3909	60
+contig_46	candida albicans	5476	28861	0.4141	60
+contig_460	methanobrevibacter smithii	2173	methanobrevibacter_smithii	0.9971	60
+contig_461	saccharomyces cerevisiae	4932	tig00000063	0.9981	60
+contig_462	candida albicans	5476	25545	0.1903	60
+contig_463	saccharomyces cerevisiae	4932	tig00000018	0.9984	60
+contig_464	saccharomyces cerevisiae	4932	tig00000023	0.9977	60
+contig_465	candida albicans	5476	28278	0.5385	60
+contig_466	candida albicans	5476	25523	0.3749	60
+contig_467	saccharomyces cerevisiae	4932	tig00000055	0.9959	60
+contig_468	candida albicans	5476	25480	0.0462	60
+contig_469	candida albicans	5476	28604	0.2857	60
+contig_47	saccharomyces cerevisiae	4932	tig00000018	0.8978	9
+contig_470	candida albicans	5476	28896	0.0576	60
+contig_471	candida albicans	5476	21317	0.0535	60
+contig_472	candida albicans	5476	2996	0.2000	60
+contig_473	candida albicans	5476	28753	0.2956	60
+contig_474	saccharomyces cerevisiae	4932	tig00000109	0.9994	60
+contig_475	methanobrevibacter smithii	2173	methanobrevibacter_smithii	0.9942	60
+contig_476	candida albicans	5476	24431	0.1129	60
+contig_477	saccharomyces cerevisiae	4932	tig00000031	0.9969	60
+contig_478	faecalibacterium	853	Faecalibacterium_prausnitzii	0.8146	60
+contig_479	candida albicans	5476	28362	0.5641	60
+contig_48	saccharomyces cerevisiae	4932	tig00000018	0.9987	60
+contig_482	saccharomyces cerevisiae	4932	tig00000011	0.9955	60
+contig_483	candida albicans	5476	28853	0.3900	60
+contig_484	candida albicans	5476	28829	0.0665	60
+contig_485	candida albicans	5476	25943	0.2635	60
+contig_486	candida albicans	5476	26460	0.1103	60
+contig_487	candida albicans	5476	28648	0.0404	60
+contig_488	candida albicans	5476	28202	0.0930	60
+contig_489	candida albicans	5476	28737	0.3429	60
+contig_49	saccharomyces cerevisiae	4932	tig00000003	0.9829	60
+contig_490	candida albicans	5476	25678	0.1518	60
+contig_491	candida albicans	5476	28544	0.2163	60
+contig_492	saccharomyces cerevisiae	4932	tig00000055	0.9950	60
+contig_493	saccharomyces cerevisiae	4932	tig00000306	0.9874	60
+contig_494	saccharomyces cerevisiae	4932	tig00000011	0.9982	60
+contig_495	candida albicans	5476	28267	0.6748	60
+contig_496	saccharomyces cerevisiae	4932	tig00000139	0.8811	60
+contig_497	candida albicans	5476	27133	0.2288	60
+contig_498	candida albicans	5476	25167	0.9812	60
+contig_499	saccharomyces cerevisiae	4932	tig00000023	0.9937	60
+contig_5	escherichia coli	562	E.coli.b2207.final.genome	0.9950	60
+contig_50	saccharomyces cerevisiae	4932	tig00000104	0.8131	60
+contig_500	candida albicans	5476	28189	0.0941	60
+contig_501	clostridioides difficile	1496	Clostridium_difficille	0.9994	60
+contig_502	candida albicans	5476	28943	0.5562	60
+contig_503	candida albicans	5476	26655	0.0783	60
+contig_504	saccharomyces cerevisiae	4932	tig00000072	0.9920	60
+contig_505	saccharomyces cerevisiae	4932	tig00000047	0.9935	60
+contig_506	candida albicans	5476	24925	0.0717	60
+contig_507	candida albicans	5476	24463	0.1888	60
+contig_508	candida albicans	5476	28961	0.2702	60
+contig_509	saccharomyces cerevisiae	4932	tig00000051	0.9942	60
+contig_51	saccharomyces cerevisiae	4932	tig00000306	0.9962	60
+contig_510	candida albicans	5476	28717	0.1417	60
+contig_511	veillonella	29465	veillonella_rogosae	0.9271	60
+contig_512	candida albicans	5476	28410	0.4185	60
+contig_513	methanobrevibacter smithii	2173	methanobrevibacter_smithii	0.9967	60
+contig_514	saccharomyces cerevisiae	4932	tig00000031	0.9972	60
+contig_515	candida albicans	5476	23931	0.1216	60
+contig_516	candida albicans	5476	28594	0.0693	60
+contig_517	methanobrevibacter smithii	2173	methanobrevibacter_smithii	0.9939	60
+contig_518	candida albicans	5476	26804	0.0597	60
+contig_519	candida albicans	5476	19759	0.4035	60
+contig_520	saccharomyces cerevisiae	4932	tig00000031	0.9981	60
+contig_521	saccharomyces cerevisiae	4932	tig00000071	0.9970	60
+contig_522	saccharomyces cerevisiae	4932	tig00000069	0.9986	60
+contig_523	candida albicans	5476	28738	0.6781	60
+contig_524	candida albicans	5476	27187	0.4414	60
+contig_525	candida albicans	5476	9944	0.1673	60
+contig_526	candida albicans	5476	28610	0.2464	60
+contig_527	saccharomyces cerevisiae	4932	tig00000031	0.9965	60
+contig_528	saccharomyces cerevisiae	4932	tig00000001	0.9893	15
+contig_529	candida albicans	5476	28321	0.2380	60
+contig_53	saccharomyces cerevisiae	4932	tig00000023	0.9976	60
+contig_530	saccharomyces cerevisiae	4932	tig00000128	0.9949	60
+contig_531	candida albicans	5476	28630	0.0714	60
+contig_532	candida albicans	5476	9982	0.1472	60
+contig_533	methanobrevibacter smithii	2173	methanobrevibacter_smithii	0.9850	60
+contig_534	candida albicans	5476	24622	0.0507	60
+contig_536	candida albicans	5476	28227	0.0492	60
+contig_537	saccharomyces cerevisiae	4932	tig00000069	0.9943	60
+contig_538	saccharomyces cerevisiae	4932	tig00000036	0.9941	60
+contig_539	candida albicans	5476	28901	0.2089	60
+contig_54	saccharomyces cerevisiae	4932	tig00000128	0.9996	60
+contig_540	candida albicans	5476	28563	0.1301	60
+contig_541	candida albicans	5476	28941	0.1327	60
+contig_542	candida albicans	5476	28456	0.3540	60
+contig_543	candida albicans	5476	28326	0.3041	60
+contig_544	saccharomyces cerevisiae	4932	tig00000031	0.9943	60
+contig_545	candida albicans	5476	24190	0.0311	60
+contig_546	saccharomyces cerevisiae	4932	tig00000036	0.9980	60
+contig_547	candida albicans	5476	28557	0.9692	60
+contig_548	escherichia	561	Escherichia_coli_chromosome	0.9999	13
+contig_549	escherichia	561	Escherichia_coli_chromosome	0.9990	60
+contig_55	saccharomyces cerevisiae	4932	tig00000308	0.9996	60
+contig_550	escherichia coli	562	E.coli.b2207.final.genome	0.9810	16
+contig_551	escherichia coli	562	E.coli.JM109.final.genome	0.9995	60
+contig_552	escherichia coli	562	E.coli.JM109.final.genome	0.9955	9
+contig_553	escherichia	561	Escherichia_coli_chromosome	0.9990	60
+contig_554	escherichia coli	562	E.coli.JM109.final.genome	0.9999	4
+contig_556	escherichia	561	Escherichia_coli_chromosome	0.9996	0
+contig_557	escherichia coli	562	E.coli.JM109.final.genome	0.9999	9
+contig_56	saccharomyces cerevisiae	4932	tig00000308	0.7346	60
+contig_560	escherichia coli	562	E.coli.B766.final.genome	0.9997	60
+contig_561	escherichia	561	Escherichia_coli_B3008	1.0000	13
+contig_562	saccharomyces cerevisiae	4932	tig00000109	0.4584	60
+contig_563	saccharomyces cerevisiae	4932	tig00000001	0.9986	60
+contig_564	candida albicans	5476	28295	0.7707	60
+contig_565	saccharomyces cerevisiae	4932	tig00000003	0.9992	60
+contig_566	escherichia	561	Escherichia_coli_B3008	0.9964	6
+contig_567	prevotella	838	Prevotella_corporis.final.genome1	0.9999	60
+contig_568	prevotella	838	Prevotella_corporis.final.plasmid1	0.8641	59
+contig_569	saccharomyces cerevisiae	4932	tig00000109	0.1420	60
+contig_57	saccharomyces cerevisiae	4932	tig00000011	0.9979	60
+contig_570	escherichia	561	Escherichia_coli_chromosome	0.9492	48
+contig_571	saccharomyces cerevisiae	4932	tig00000051	0.9927	60
+contig_572	saccharomyces cerevisiae	4932	tig00000001	0.9985	60
+contig_573	saccharomyces cerevisiae	4932	tig00000051	0.9989	60
+contig_574	saccharomyces cerevisiae	4932	tig00000306	0.9989	60
+contig_575	escherichia coli	562	E.coli.B766.final.genome	0.9963	2
+contig_576	candida albicans	5476	24558	0.1824	60
+contig_577	candida albicans	5476	26222	0.1501	60
+contig_578	saccharomyces cerevisiae	4932	tig00000071	0.9952	60
+contig_579	escherichia coli	562	E.coli.JM109.final.genome	0.9992	0
+contig_58	lactobacillus fermentum	1613	Lactobacillus_fermentum	0.7840	60
+contig_580	candida albicans	5476	28529	0.0811	60
+contig_581	candida albicans	5476	28957	0.5980	60
+contig_582	saccharomyces cerevisiae	4932	tig00000036	0.7770	60
+contig_583	escherichia	561	Escherichia_coli_plasmid	0.8629	60
+contig_584	escherichia	561	Escherichia_coli_chromosome	0.9990	60
+contig_585	candida albicans	5476	25388	0.0321	60
+contig_586	candida albicans	5476	21947	0.2040	60
+contig_587	saccharomyces cerevisiae	4932	tig00000071	0.9984	60
+contig_588	saccharomyces cerevisiae	4932	tig00000003	0.9994	60
+contig_589	escherichia coli	562	E.coli.b2207.final.genome	0.9995	27
+contig_59	escherichia coli	562	E.coli.b2207.final.genome	0.9998	60
+contig_590	saccharomyces cerevisiae	4932	tig00000023	0.9975	60
+contig_591	escherichia coli	562	E.coli.B766.final.plasmid1	0.9753	60
+contig_592	saccharomyces cerevisiae	4932	tig00000001	0.9979	60
+contig_593	candida albicans	5476	24956	0.0662	60
+contig_594	saccharomyces cerevisiae	4932	tig00000001	0.9975	60
+contig_595	candida albicans	5476	21947	0.0568	60
+contig_596	saccharomyces cerevisiae	4932	tig00000018	0.9967	60
+contig_597	saccharomyces cerevisiae	4932	tig00000018	0.9985	60
+contig_599	saccharomyces cerevisiae	4932	tig00000139	0.9959	60
+contig_6	escherichia	561	Escherichia_coli_B3008	0.9994	60
+contig_60	escherichia coli	562	E.coli.b2207.final.genome	0.9998	60
+contig_600	bifidobacterium adolescentis	1680	Bifidobacterium_adolescentis	0.7958	60
+contig_601	saccharomyces cerevisiae	4932	tig00000023	0.9979	60
+contig_602	saccharomyces cerevisiae	4932	tig00000069	0.9962	60
+contig_603	saccharomyces cerevisiae	4932	tig00000306	0.8877	60
+contig_604	candida albicans	5476	28893	0.2188	60
+contig_605	saccharomyces cerevisiae	4932	tig00000136	0.9430	60
+contig_606	saccharomyces cerevisiae	4932	tig00000003	0.9968	60
+contig_607	candida albicans	5476	28468	0.9297	60
+contig_61	saccharomyces cerevisiae	4932	tig00000072	0.9921	60
+contig_62	candida albicans	5476	25614	0.0799	60
+contig_63	candida albicans	5476	28508	0.1559	60
+contig_64	saccharomyces cerevisiae	4932	tig00000036	0.9989	60
+contig_66	escherichia	561	Escherichia_coli_B3008	0.9848	60
+contig_67	escherichia	561	Escherichia_coli_B3008	0.9892	27
+contig_69	candida albicans	5476	28864	0.4049	60
+contig_7	escherichia coli	562	E.coli.B766.final.genome	0.9998	60
+contig_70	escherichia coli	562	E.coli.JM109.final.genome	0.9999	1
+contig_71	escherichia	561	Escherichia_coli_chromosome	0.9967	60
+contig_72	escherichia coli	562	E.coli.B766.final.genome	0.9997	60
+contig_73	escherichia	561	Escherichia_coli_B3008	0.9994	60
+contig_74	escherichia coli	562	E.coli.B766.final.genome	0.9989	60
+contig_77	escherichia	561	Escherichia_coli_chromosome	0.9937	11
+contig_78	escherichia coli	562	E.coli.B766.final.genome	0.9721	60
+contig_79	escherichia coli	562	E.coli.JM109.final.genome	0.9995	60
+contig_80	escherichia	561	Escherichia_coli_chromosome	0.9987	60
+contig_81	escherichia coli	562	E.coli.B766.final.genome	0.9996	60
+contig_82	escherichia	561	Escherichia_coli_chromosome	0.9988	60
+contig_83	escherichia coli	562	E.coli.JM109.final.genome	0.9995	16
+contig_84	escherichia coli	562	E.coli.b2207.final.genome	0.9324	2
+contig_86	escherichia coli	562	E.coli.b2207.final.genome	0.9709	27
+contig_87	escherichia coli	562	E.coli.JM109.final.genome	0.9659	16
+contig_88	escherichia	561	Escherichia_coli_B3008	0.9877	53
+contig_91	escherichia coli	562	E.coli.JM109.final.genome	0.9998	60
+contig_92	escherichia	561	Escherichia_coli_chromosome	0.9996	60
+contig_93	escherichia	561	Escherichia_coli_B3008	0.9991	60
+contig_95	escherichia	561	Escherichia_coli_chromosome	0.9850	60
+contig_97	saccharomyces cerevisiae	4932	tig00000109	0.9964	60
+contig_98	candida albicans	5476	28803	0.8072	60

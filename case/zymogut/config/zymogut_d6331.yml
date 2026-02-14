@@ -1,0 +1,125 @@
+# ZymoBIOMICS Gut Microbiome Standard (D6331) Configuration
+# Source: Zymo Research protocol + MicroBench (Kirk3gaard)
+# Purpose: Ground-truth validation for gut case study (Reviewer #1)
+
+dataset:
+  name: "ZymoBIOMICS Gut Microbiome Standard"
+  product_code: "D6331"
+  citation: "Zymo Research; Kirk3gaard/MicroBench; Oxford Nanopore SUP basecalls"
+
+data_sources:
+  reads:
+    url: "http://ftp.sra.ebi.ac.uk/vol1/run/ERR142/ERR14251410/PAY12289_barcode13.dorado0.8.2.bm5.0.0.sup.sim.fastq.gz"
+    filename: "zymogut_sup.fastq.gz"
+    type: "nanopore_sup"
+    description: "Oxford Nanopore SUP basecalls from MicroBench"
+
+  references:
+    url: "https://s3.amazonaws.com/zymo-files/BioPool/D6331.refseq.zip"
+    filename: "D6331.refseq.zip"
+    description: "Zymo D6331 reference genomes (21 strains)"
+
+# ZymoGut D6331 Theoretical Composition (Genomic DNA %)
+# Source: Zymo protocol Table 1
+# Note: Percentages are genomic DNA abundance, NOT cell count
+ground_truth:
+  # Bacteria (15 strains representing diverse gut taxa)
+  - species: "Faecalibacterium prausnitzii"
+    taxid: 853
+    genomic_dna_pct: 17.63
+    domain: "Bacteria"
+
+  - species: "Veillonella rogosae"
+    taxid: 154447
+    genomic_dna_pct: 15.87
+    domain: "Bacteria"
+
+  - species: "Roseburia hominis"
+    taxid: 301301
+    genomic_dna_pct: 9.89
+    domain: "Bacteria"
+
+  - species: "Bacteroides fragilis"
+    taxid: 817
+    genomic_dna_pct: 9.94
+    domain: "Bacteria"
+
+  - species: "Lactobacillus fermentum"
+    taxid: 1613
+    genomic_dna_pct: 9.63
+    domain: "Bacteria"
+
+  - species: "Bifidobacterium adolescentis"
+    taxid: 1680
+    genomic_dna_pct: 8.78
+    domain: "Bacteria"
+
+  - species: "Fusobacterium nucleatum"
+    taxid: 851
+    genomic_dna_pct: 7.49
+    domain: "Bacteria"
+
+  - species: "Prevotella corporis"
+    taxid: 28127
+    genomic_dna_pct: 4.98
+    domain: "Bacteria"
+
+  - species: "Clostridioides difficile"
+    taxid: 1496
+    genomic_dna_pct: 2.62
+    domain: "Bacteria"
+
+  - species: "Akkermansia muciniphila"
+    taxid: 239935
+    genomic_dna_pct: 0.97
+    domain: "Bacteria"
+
+  - species: "Methanobrevibacter smithii"
+    taxid: 2173
+    genomic_dna_pct: 0.066
+    domain: "Archaea"
+
+  - species: "Salmonella enterica"
+    taxid: 28901
+    genomic_dna_pct: 0.009
+    domain: "Bacteria"
+
+  - species: "Enterococcus faecalis"
+    taxid: 1351
+    genomic_dna_pct: 0.001
+    domain: "Bacteria"
+
+  # Fungi (2 strains)
+  - species: "Saccharomyces cerevisiae"
+    taxid: 4932
+    genomic_dna_pct: 6.09
+    domain: "Eukaryota"
+
+  - species: "Candida albicans"
+    taxid: 5476
+    genomic_dna_pct: 5.59
+    domain: "Eukaryota"
+
+# Assembly parameters
+assembly:
+  tool: "flye"
+  version: ">=2.9"
+  mode: "--nano-hq"  # SUP basecalls are high quality
+  extra_args: "--meta"
+  min_threads: 8
+  recommended_threads: 16
+
+# HYMET classification parameters
+classification:
+  mode: "contigs"
+  threads: 8
+  cand_max: 5000  # default
+
+# Output paths (relative to workflow root)
+outputs:
+  work_dir: "work"
+  assembly_dir: "work/assembly"
+  truth_dir: "work/truth"
+  hymet_dir: "work/hymet_output"
+  results_dir: "results"
+  figures_dir: "results/figures"

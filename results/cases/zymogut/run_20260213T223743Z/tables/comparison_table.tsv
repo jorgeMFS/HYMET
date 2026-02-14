@@ -1,0 +1,60 @@
+species	truth_pct	predicted_count	predicted_pct	diff_pct
+candida albicans	30.8411	5	0.9363	-29.9048
+saccharomyces cerevisiae	28.9720	2	0.3745	-28.5974
+escherichia coli	21.8692	92	17.2285	-4.6407
+escherichia	12.5234	0	0.0000	-12.5234
+clostridioides difficile	1.8692	0	0.0000	-1.8692
+methanobrevibacter smithii	1.4953	0	0.0000	-1.4953
+prevotella	0.7477	0	0.0000	-0.7477
+bifidobacterium adolescentis	0.3738	2	0.3745	0.0007
+akkermansia	0.1869	0	0.0000	-0.1869
+bacteroides	0.1869	0	0.0000	-0.1869
+faecalibacterium	0.1869	0	0.0000	-0.1869
+fusobacterium	0.1869	0	0.0000	-0.1869
+lactobacillus fermentum	0.1869	0	0.0000	-0.1869
+roseburia	0.1869	0	0.0000	-0.1869
+veillonella	0.1869	0	0.0000	-0.1869
+akkermansia sp. aa_0143	0.0000	1	0.1873	0.1873
+bacteroides salyersiae	0.0000	1	0.1873	0.1873
+candida dubliniensis	0.0000	155	29.0262	29.0262
+candida metapsilosis	0.0000	2	0.3745	0.3745
+candida orthopsilosis	0.0000	1	0.1873	0.1873
+candida pseudojiufengensis	0.0000	2	0.3745	0.3745
+citrobacter sp. rhb25-c09	0.0000	1	0.1873	0.1873
+enterobacter chengduensis	0.0000	1	0.1873	0.1873
+enterobacter hormaechei	0.0000	1	0.1873	0.1873
+enterobacter sp. rhbstw-00175	0.0000	2	0.3745	0.3745
+escherichia fergusonii	0.0000	1	0.1873	0.1873
+escherichia sp. 1_1_43	0.0000	20	3.7453	3.7453
+escherichia sp. 4_1_40b	0.0000	16	2.9963	2.9963
+escherichia sp. e1v33	0.0000	1	0.1873	0.1873
+escherichia sp. e4742	0.0000	2	0.3745	0.3745
+escherichia sp. kte11	0.0000	1	0.1873	0.1873
+escherichia sp. kte172	0.0000	19	3.5581	3.5581
+escherichia sp. kte96	0.0000	1	0.1873	0.1873
+escherichia sp. mod1-ec4560	0.0000	1	0.1873	0.1873
+escherichia sp. mod1-ec6153	0.0000	1	0.1873	0.1873
+escherichia sp. r11	0.0000	1	0.1873	0.1873
+escherichia sp. r12	0.0000	1	0.1873	0.1873
+escherichia sp. r14	0.0000	1	0.1873	0.1873
+escherichia sp. r16	0.0000	4	0.7491	0.7491
+escherichia sp. r19	0.0000	8	1.4981	1.4981
+escherichia sp. r2	0.0000	1	0.1873	0.1873
+escherichia sp. r6	0.0000	1	0.1873	0.1873
+escherichia sp. r7	0.0000	1	0.1873	0.1873
+escherichia sp. tw09308	0.0000	2	0.3745	0.3745
+faecalibacterium langellae	0.0000	1	0.1873	0.1873
+fusobacterium animalis	0.0000	1	0.1873	0.1873
+hallella colorans	0.0000	1	0.1873	0.1873
+klebsiella sp. wp3-w18-esbl-02	0.0000	1	0.1873	0.1873
+lodderomyces elongisporus	0.0000	1	0.1873	0.1873
+methanobrevibacter sp. tll-48-huf1	0.0000	8	1.4981	1.4981
+prevotella disiens	0.0000	3	0.5618	0.5618
+romboutsia ilealis	0.0000	11	2.0599	2.0599
+saccharomyces kudriavzevii	0.0000	2	0.3745	0.3745
+saccharomyces mikatae	0.0000	22	4.1199	4.1199
+saccharomyces paradoxus	0.0000	128	23.9700	23.9700
+salmonella bongori	0.0000	1	0.1873	0.1873
+shigella sp. fc1172	0.0000	1	0.1873	0.1873
+veillonella dispar	0.0000	1	0.1873	0.1873
+wujia chipingensis	0.0000	1	0.1873	0.1873

@@ -1,0 +1,9 @@
+metric	value
+l1_distance	1.621737
+bray_curtis	0.810868
+correlation	0.129501
+genus_l1_distance	0.079912
+genus_bray_curtis	0.039956
+genus_correlation	0.998187
+genus_recall	0.785714
+total_contigs	534

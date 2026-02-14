@@ -1,0 +1,15 @@
+{
+  "sample_id": "zymogut_d6331",
+  "dataset": "ZymoBIOMICS Gut Microbiome Standard (D6331)",
+  "run_id": "run_20260213T223743Z",
+  "timestamp": "2026-02-13T22:37:43Z",
+  "source": {
+    "reads": "MicroBench (Kirk3gaard) - Oxford Nanopore SUP basecalls",
+    "references": "Zymo Research D6331.refseq.zip"
+  },
+  "metrics": {
+    "l1_distance": 1.621737,
+    "bray_curtis": 0.810868,
+    "correlation": 0.129501
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "sample": "zymogut_d6331",
+  "dataset": "ZymoBIOMICS Gut Microbiome Standard (D6331)",
+  "metrics": {
+    "l1_distance": 1.621737,
+    "bray_curtis": 0.810868,
+    "correlation": 0.129501,
+    "genus_l1_distance": 0.079912,
+    "genus_bray_curtis": 0.039956,
+    "genus_correlation": 0.998187,
+    "genus_recall": 0.785714,
+    "total_contigs": 534.0
+  },
+  "species_count": 15,
+  "genus_count": 14,
+  "figures": [
+    "fig_zymogut_genus_abundance.png",
+    "fig_zymogut_genus_correlation.png",
+    "fig_zymogut_dual_correlation.png",
+    "fig_zymogut_metrics_summary.png",
+    "fig_zymogut_abundance_comparison.png",
+    "fig_zymogut_species_correlation.png",
+    "fig_zymogut_species_error.png",
+    "fig_zymogut_genus_error.png"
+  ]
+}
