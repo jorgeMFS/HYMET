@@ -1,0 +1,18 @@
+#CAMI Submission for Taxonomic Profiling
+@Version:0.9.1 @Ranks:superkingdom|phylum|class|order|family|genus|species @SampleID:zymogut_d6331_truth
+@@TAXID	RANK	TAXPATH	TAXPATHSN	PERCENTAGE
+5476	species	5476	candida albicans	30.841121
+4932	species	4932	saccharomyces cerevisiae	28.971963
+562	species	562	escherichia coli	21.869159
+561	species	561	escherichia	12.523364
+1496	species	1496	clostridioides difficile	1.869159
+2173	species	2173	methanobrevibacter smithii	1.495327
+838	species	838	prevotella	0.747664
+1680	species	1680	bifidobacterium adolescentis	0.373832
+848	species	848	fusobacterium	0.186916
+816	species	816	bacteroides	0.186916
+841	species	841	roseburia	0.186916
+239934	species	239934	akkermansia	0.186916
+853	species	853	faecalibacterium	0.186916
+29465	species	29465	veillonella	0.186916
+1613	species	1613	lactobacillus fermentum	0.186916

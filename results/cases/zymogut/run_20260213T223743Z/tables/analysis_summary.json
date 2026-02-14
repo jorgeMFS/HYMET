@@ -1,0 +1,13 @@
+{
+  "sample": "zymogut_d6331",
+  "total_contigs": 534,
+  "metrics": {
+    "l1_distance": 1.6217368432208334,
+    "bray_curtis": 0.810868421610417,
+    "correlation": 0.1295011065475615,
+    "genus_l1_distance": 0.07991179549301691,
+    "genus_bray_curtis": 0.039955897746508456,
+    "genus_correlation": 0.9981865843764357,
+    "genus_recall": 0.7857142857142857
+  }
+}

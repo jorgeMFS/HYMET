@@ -302,6 +302,12 @@ def write_outputs(
 
 
 def main() -> None:
+    # Derive default taxonomy paths relative to this script's location (HYMET/tools/)
+    script_dir = pathlib.Path(__file__).resolve().parent
+    repo_root = script_dir.parent
+    default_nodes = repo_root / "taxonomy_files" / "nodes.dmp"
+    default_names = repo_root / "taxonomy_files" / "names.dmp"
+
     ap = argparse.ArgumentParser(description="Generate derived CAMI sample subsets.")
     ap.add_argument("--fasta", default="/data/cami/sample_0.fna", help="Original contigs FASTA.")
     ap.add_argument(
@@ -311,17 +317,17 @@ def main() -> None:
     )
     ap.add_argument(
         "--nodes",
-        default="/data/HYMET/taxonomy_files/nodes.dmp",
+        default=str(default_nodes),
         help="NCBI taxonomy nodes.dmp",
     )
     ap.add_argument(
         "--names",
-        default="/data/HYMET/taxonomy_files/names.dmp",
+        default=str(default_names),
         help="NCBI taxonomy names.dmp",
     )
     ap.add_argument(
         "--outdir",
-        default=str(pathlib.Path(__file__).resolve().parents[1] / "bench" / "data"),
+        default=str(repo_root / "bench" / "data"),
         help="Output directory for derived samples.",
     )
     args = ap.parse_args()

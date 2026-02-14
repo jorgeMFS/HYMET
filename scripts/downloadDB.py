@@ -6,6 +6,8 @@ import shutil
 import csv
 import logging
 import subprocess
+import time
+import fcntl
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import defaultdict
 from time import sleep
@@ -14,6 +16,7 @@ from time import sleep
 MAX_WORKERS = 64  # Maximum number of threads for parallel downloads
 RETRIES = 3       # Maximum number of retries per download
 TIMEOUT = 15      # Timeout (in seconds) for each download attempt
+REFRESH_DAYS = 14  # Refresh assembly summaries every two weeks (matches limit_candidates.py)
 
 # Logging configuration
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -26,31 +29,82 @@ def setup_directories(output_dir, cache_dir):
     os.makedirs(cache_dir, exist_ok=True)
 
 class GenomeDownloader:
-    def __init__(self, output_dir, cache_dir):
+    def __init__(self, output_dir, cache_dir, assembly_summary_dir=None):
         self.output_dir = output_dir
         self.cache_dir = cache_dir
+        # Use shared assembly_summary_dir if provided, otherwise fall back to cache_dir
+        self.assembly_summary_dir = assembly_summary_dir or cache_dir
         self.assembly_summaries = self.download_assembly_summaries()
         self.failed_downloads = set()
         self.successful_downloads = set()
         self.assembly_data = self.load_assembly_summaries()
 
+    def _needs_refresh(self, path):
+        """Check if file is older than REFRESH_DAYS or doesn't exist."""
+        try:
+            mtime = os.path.getmtime(path)
+            age_days = (time.time() - mtime) / 86400.0
+            return age_days > REFRESH_DAYS
+        except OSError:
+            return True
+
     def download_assembly_summaries(self):
         """
         Downloads the assembly summary files from NCBI (RefSeq and GenBank).
+        Uses a shared directory to avoid duplicating ~1.6GB of data per cache key.
+        Files are refreshed every REFRESH_DAYS (14 days by default).
+        Uses file locking and atomic rename to prevent race conditions.
         """
         summaries = {}
+        os.makedirs(self.assembly_summary_dir, exist_ok=True)
         urls = [
             ("https://ftp.ncbi.nlm.nih.gov/genomes/refseq/assembly_summary_refseq.txt", "refseq"),
             ("https://ftp.ncbi.nlm.nih.gov/genomes/genbank/assembly_summary_genbank.txt", "genbank")
         ]
-        
+
         for url, key in urls:
-            cache_file = os.path.join(self.cache_dir, f"assembly_summary_{key}.txt")
-            if not os.path.exists(cache_file):
-                self.download_file_wget(url, cache_file)
+            cache_file = os.path.join(self.assembly_summary_dir, f"assembly_summary_{key}.txt")
+            lock_file = f"{cache_file}.lock"
+            
+            # Check if likely needs update (fast path)
+            if not os.path.exists(cache_file) or self._needs_refresh(cache_file):
+                logging.info(f"Acquiring lock for {key} assembly summary...")
+                with open(lock_file, 'w') as lock_f:
+                    try:
+                        # Acquire exclusive lock
+                        fcntl.flock(lock_f, fcntl.LOCK_EX)
+                        
+                        # Double-check under lock
+                        if not os.path.exists(cache_file) or self._needs_refresh(cache_file):
+                            logging.info(f"Downloading {key} assembly summary to shared location: {cache_file}")
+                            temp_file = f"{cache_file}.tmp"
+                            try:
+                                self.download_file_wget(url, temp_file)
+                                os.rename(temp_file, cache_file)
+                                logging.info(f"Successfully updated {cache_file}")
+                            except Exception as e:
+                                if os.path.exists(temp_file):
+                                    os.remove(temp_file)
+                                raise e
+                        else:
+                             logging.info(f"Using cached {key} assembly summary (updated by another process): {cache_file}")
+                    
+                    finally:
+                        fcntl.flock(lock_f, fcntl.LOCK_UN)
+            else:
+                logging.info(f"Using cached {key} assembly summary: {cache_file}")
+            
             summaries[key] = cache_file
-        
+            
+            # Clean up lock file (best effort)
+            try:
+                if os.path.exists(lock_file):
+                    os.remove(lock_file)
+            except OSError:
+                pass # Ignore if already removed or permission issue
+
         return summaries
+
 
     def download_file_wget(self, url, destination, retries=RETRIES):
         """
@@ -222,18 +276,28 @@ class GenomeDownloader:
         logging.info(f"Genomes concatenated into {output_file}")
 
 if __name__ == "__main__":
-    if len(sys.argv) != 5:
-        print("Usage: python3 download_genomes.py <genomes_file> <output_dir> <taxonomy_file> <cache_dir>")
+    if len(sys.argv) < 5:
+        print("Usage: python3 download_genomes.py <genomes_file> <output_dir> <taxonomy_file> <cache_dir> [assembly_summary_dir]")
+        print("\nArguments:")
+        print("  genomes_file        - File with one genome accession per line")
+        print("  output_dir          - Directory for downloaded genome FASTA files")
+        print("  taxonomy_file       - Output path for detailed_taxonomy.tsv")
+        print("  cache_dir           - Directory for temporary download files")
+        print("  assembly_summary_dir - (Optional) Shared directory for assembly summaries")
+        print("                         If not provided, falls back to cache_dir")
+        print("                         Using a shared directory avoids re-downloading ~1.6GB per run")
         sys.exit(1)
 
     genomes_file = sys.argv[1]
     output_dir = sys.argv[2]
     taxonomy_file = sys.argv[3]
     cache_dir = sys.argv[4]
+    # Optional: shared assembly summary directory (avoids 1.6GB duplication per cache key)
+    assembly_summary_dir = sys.argv[5] if len(sys.argv) > 5 else None
 
     setup_directories(output_dir, cache_dir)
-    
-    downloader = GenomeDownloader(output_dir, cache_dir)
+
+    downloader = GenomeDownloader(output_dir, cache_dir, assembly_summary_dir)
     identifiers = downloader.process_identifiers(genomes_file)
     
     logging.info(f"Starting download of {len(identifiers)} genomes...")
